@@ -73,15 +73,15 @@
     </script>
     <link rel="stylesheet" href="styles.css">
     <script>
-        // Check local storage or system preference to apply dark mode immediately and avoid flashing
-        (function() {
-            const savedTheme = localStorage.getItem("theme");
-            if (savedTheme === "dark" || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add("dark");
-            } else {
-                document.documentElement.classList.remove("dark");
-            }
-        })();
+            // Check local storage or system preference to apply dark mode immediately and avoid flashing
+            (function () {
+                const savedTheme = localStorage.getItem("theme");
+                if (savedTheme === "dark" || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add("dark");
+                } else {
+                    document.documentElement.classList.remove("dark");
+                }
+            })();
     </script>
     <style>
         /* Immediate dark mode theme overrides to prevent FOUC (flash of unstyled content) */
@@ -89,6 +89,7 @@
             background-color: #09090b !important;
             color: #f4f4f5 !important;
         }
+
         html.dark #dynamic-bg {
             background: linear-gradient(to bottom right, #09090b, #18181b) !important;
         }
@@ -119,7 +120,8 @@
                 <h3 class="font-google font-bold text-lg text-slate-800 dark:text-white">Enable Real-Time Weather</h3>
             </div>
             <p class="text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
-                Allow Google Weather to fetch micro-climate data tailored specifically to your exact coordinates, or
+                Allow Unofficial Google Weather to fetch micro-climate data tailored specifically to your exact
+                coordinates, or
                 continue with standard regional monitoring.
             </p>
             <div class="flex flex-col sm:flex-row gap-2.5 justify-end">
@@ -211,11 +213,14 @@
                         Add a Gemini API key to enable AI-powered weather summaries and recommendations
                     </p>
                     <!-- API warning message for rate limit/usage limit -->
-                    <div id="settings-api-warning" class="hidden p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 rounded-2xl text-xs text-rose-700 dark:text-rose-400 space-y-1">
+                    <div id="settings-api-warning"
+                        class="hidden p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 rounded-2xl text-xs text-rose-700 dark:text-rose-400 space-y-1">
                         <p class="font-bold flex items-center gap-1.5">
-                            <i class="fa-solid fa-circle-exclamation text-sm text-rose-500 animate-pulse"></i> API Key Rate Limited / Quota Exceeded
+                            <i class="fa-solid fa-circle-exclamation text-sm text-rose-500 animate-pulse"></i> API Key
+                            Rate Limited / Quota Exceeded
                         </p>
-                        <p class="opacity-90">Your Gemini API key has exceeded its rate limit or its usage has run out. Please check your billing or quota status on Google AI Studio.</p>
+                        <p class="opacity-90">Your Gemini API key has exceeded its rate limit or its usage has run out.
+                            Please check your billing or quota status on Google AI Studio.</p>
                     </div>
                     <div class="space-y-2">
                         <div class="relative">
@@ -295,15 +300,16 @@
         <header
             class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4 md:mb-5 flex-shrink-0 layout-transition">
             <!-- App Logo and Brand -->
-            <div class="flex items-center gap-3 active:scale-95 transition-transform cursor-pointer justify-center md:justify-start">
+            <div
+                class="flex items-center gap-3 active:scale-95 transition-transform cursor-pointer justify-center md:justify-start">
                 <div
                     class="p-2.5 bg-white/80 dark:bg-zinc-950/80 rounded-2xl shadow-sm border border-transparent dark:border-zinc-800/50 backdrop-blur-md flex items-center justify-center">
-                    <img src="images/cloud.png" class="w-8 h-8 object-contain" alt="Google Weather Logo">
+                    <img src="images/cloud.png" class="w-8 h-8 object-contain" alt="Unofficial Google Weather Logo">
                 </div>
                 <div>
                     <h1
                         class="font-google font-bold text-xl tracking-tight text-slate-800 dark:text-white flex items-center gap-1.5">
-                        Google Weather
+                        Unofficial <br> Google Weather
                     </h1>
                 </div>
             </div>
@@ -367,7 +373,8 @@
                         title="Settings">
                         <i class="fa-solid fa-gear text-lg"></i>
                         <!-- Notification Dot -->
-                        <span id="settings-notification-dot" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border border-white dark:border-zinc-950 animate-pulse"></span>
+                        <span id="settings-notification-dot"
+                            class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border border-white dark:border-zinc-950 animate-pulse"></span>
                     </button>
                 </div>
             </div>
@@ -549,7 +556,9 @@
                             </div>
                             <p id="current-date" class="text-sm text-slate-500 dark:text-slate-400 font-medium">Sunday,
                                 May 24, 2026</p>
-                            <span id="last-updated" class="text-[10px] text-slate-400 dark:text-slate-500/80 font-medium mt-1 block">Last updated: --:--</span>
+                            <span id="last-updated"
+                                class="text-[10px] text-slate-400 dark:text-slate-500/80 font-medium mt-1 block">Last
+                                updated: --:--</span>
                         </div>
                     </div>
 
@@ -706,18 +715,21 @@
                     class="hidden bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl border border-transparent dark:border-transparent rounded-5xl p-5 shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden layout-transition flex-shrink-0">
                     <div class="flex flex-col gap-4 text-left">
                         <div>
-                            <h3 id="rain-card-title" class="font-google font-extrabold text-sm sm:text-base text-slate-800 dark:text-white leading-none">
+                            <h3 id="rain-card-title"
+                                class="font-google font-extrabold text-sm sm:text-base text-slate-800 dark:text-white leading-none">
                                 Rain continuing for about 2 hours
                             </h3>
-                            <p id="rain-card-subtitle" class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-2">
+                            <p id="rain-card-subtitle"
+                                class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-2">
                                 Light rain continuing until 16:30
                             </p>
                         </div>
-                        
+
                         <!-- Rain intensity graph -->
                         <div class="w-full mt-1 relative">
                             <!-- Y-Axis Labels and Horizontal Grid Lines -->
-                            <div class="flex flex-col gap-[18px] text-[9px] font-bold text-slate-400 dark:text-slate-500 w-full relative z-0">
+                            <div
+                                class="flex flex-col gap-[18px] text-[9px] font-bold text-slate-400 dark:text-slate-500 w-full relative z-0">
                                 <div class="flex items-center gap-3">
                                     <span class="w-12 text-right opacity-80">Heavy</span>
                                     <div class="flex-1 h-px bg-slate-200/40 dark:bg-zinc-800/40"></div>
@@ -731,14 +743,16 @@
                                     <div class="flex-1 h-px bg-slate-200/40 dark:bg-zinc-800/40"></div>
                                 </div>
                             </div>
-                            
+
                             <!-- Graph Bars Container (overlayed on grid lines) -->
-                            <div id="rain-bars-container" class="absolute left-[64px] right-0 top-0.5 bottom-1 flex justify-around items-end h-[60px] z-10">
+                            <div id="rain-bars-container"
+                                class="absolute left-[64px] right-0 top-0.5 bottom-1 flex justify-around items-end h-[60px] z-10">
                                 <!-- Bars will be dynamically inserted here -->
                             </div>
-                            
+
                             <!-- X-Axis Labels Container -->
-                            <div id="rain-times-container" class="flex justify-around ml-[64px] mt-2.5 text-[9px] font-bold text-slate-400 dark:text-slate-500">
+                            <div id="rain-times-container"
+                                class="flex justify-around ml-[64px] mt-2.5 text-[9px] font-bold text-slate-400 dark:text-slate-500">
                                 <!-- Time labels will be dynamically inserted here -->
                             </div>
                         </div>
@@ -1543,7 +1557,7 @@
                 copy.airQualityValue = 25;
                 copy.sunrise = "05:42 AM";
                 copy.sunset = "08:15 PM";
-                
+
                 // Let's make it rain for the first 3 hours, then dry
                 const nowTime = new Date();
                 copy.hourly = copy.hourly.map((h, i) => {
@@ -1564,7 +1578,7 @@
                     }
                     return h;
                 });
-                
+
                 copy.lat = 51.5074;
                 copy.lon = -0.1278;
                 return copy;
@@ -1770,13 +1784,13 @@ Format of JSON:
                     body: JSON.stringify(payload),
                     signal: AbortSignal.timeout(6000)
                 });
-                
+
                 if (response.status === 429) {
                     localStorage.setItem("gemini_api_status", "rate_limited");
                     updateSettingsAPIWarning();
                     throw new Error("rate_limited");
                 }
-                
+
                 if (!response.ok) {
                     const errData = await response.json().catch(() => ({}));
                     if (errData?.error?.message?.includes("API_KEY_INVALID") || errData?.error?.status === "INVALID_ARGUMENT") {
@@ -1790,7 +1804,7 @@ Format of JSON:
                     }
                     throw new Error("Gemini enrichment skipped");
                 }
-                
+
                 localStorage.setItem("gemini_api_status", "valid");
                 updateSettingsAPIWarning();
                 const result = await response.json();
@@ -2104,7 +2118,7 @@ Format of JSON:
                     // X-Axis time label (e.g. "12:00 PM" -> "12 PM" or "12:00")
                     const timeLabel = document.createElement("span");
                     timeLabel.className = "w-full text-center whitespace-nowrap opacity-80";
-                    
+
                     const timeParts = hour.time.split(" ");
                     const hhMm = timeParts[0];
                     const amPm = timeParts[1] || "";
@@ -3217,7 +3231,7 @@ Format of JSON:
         function updateSettingsAPIWarning() {
             const warningEl = document.getElementById("settings-api-warning");
             const status = localStorage.getItem("gemini_api_status");
-            
+
             if (warningEl) {
                 if (status === "rate_limited") {
                     warningEl.classList.remove("hidden");
@@ -3243,13 +3257,13 @@ Format of JSON:
                     body: JSON.stringify(payload),
                     signal: AbortSignal.timeout(5000)
                 });
-                
+
                 if (response.status === 429) {
                     localStorage.setItem("gemini_api_status", "rate_limited");
                     updateSettingsAPIWarning();
                     return false;
                 }
-                
+
                 if (!response.ok) {
                     const errData = await response.json().catch(() => ({}));
                     if (errData?.error?.message?.includes("API_KEY_INVALID") || errData?.error?.status === "INVALID_ARGUMENT") {
@@ -3262,7 +3276,7 @@ Format of JSON:
                     }
                     return false;
                 }
-                
+
                 localStorage.setItem("gemini_api_status", "valid");
                 updateSettingsAPIWarning();
                 return true;
@@ -3695,7 +3709,7 @@ Format of JSON:
                 document.getElementById("location-modal").classList.remove("hidden");
             }
             updateBodyScroll();
-            
+
             updateSettingsAPIWarning();
         }
     </script>
