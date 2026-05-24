@@ -1,0 +1,133 @@
+/* ==========================================
+   Custom Scrollbar System (Material Design)
+   ========================================== */
+
+/* 1. Global scrollbars for Webkit browsers (Chrome, Edge, Safari, Opera) */
+/* Targets the root (html), body, and all scrollable elements */
+::-webkit-scrollbar {
+    width: 10px; /* Width for vertical scrollbar */
+    height: 10px; /* Height for horizontal scrollbar */
+}
+
+/* Scrollbar Track */
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Scrollbar Thumb */
+::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.4);
+    border-radius: 9999px;
+    border: 2px solid transparent; /* Creates padding effect around thumb */
+    background-clip: padding-box;
+    transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.65);
+    background-clip: padding-box;
+}
+
+/* Dark mode overrides for Scrollbar Thumb */
+.dark ::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.25);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.45);
+    background-clip: padding-box;
+}
+
+/* Specific styling for scrollbar corner when both scrollbars are present */
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* 2. Firefox Support (Standard CSS scrollbars) */
+html,
+body,
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
+}
+
+.dark html,
+.dark body,
+.dark * {
+    scrollbar-color: rgba(156, 163, 175, 0.25) transparent;
+}
+
+/* Column/panel-specific scrollbars */
+.custom-scrollbar-section::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar-section::-webkit-scrollbar-track,
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar-section::-webkit-scrollbar-thumb,
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.3);
+    border-radius: 9999px;
+}
+
+.custom-scrollbar-section::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.5);
+}
+
+/* Dynamic transition class for ambient background morphing */
+.theme-transition {
+    transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s ease;
+}
+
+/* Shimmer Base Styling */
+.shimmer-bg {
+    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+.dark .shimmer-bg {
+    background: linear-gradient(90deg, #09090b 25%, #18181b 50%, #09090b 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+/* Smooth transitions for responsive layout adjustments */
+.layout-transition {
+    transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1), transform 500ms cubic-bezier(0.4, 0, 0.2, 1), background-color 500ms cubic-bezier(0.4, 0, 0.2, 1), border-color 500ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 500ms cubic-bezier(0.4, 0, 0.2, 1), filter 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Column slide-out animation on desktop entry */
+@media (min-width: 1024px) {
+    .column-right {
+        animation: slideOutRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        transform-origin: left center;
+    }
+}
+
+@keyframes slideOutRight {
+    0% {
+        opacity: 0;
+        transform: translateX(-15%) scale(0.98);
+        filter: blur(4px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        filter: blur(0);
+    }
+}
