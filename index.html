@@ -907,7 +907,7 @@
             class="mt-auto border-t border-transparent dark:border-transparent pt-4 pb-2 text-center text-slate-400 dark:text-slate-500 flex-shrink-0 layout-transition">
             <p class="text-xs">&copy; 2026 Google Weather Design System Experiment.</p>
             <p class="text-[10px] opacity-75 mt-1.5 flex justify-center items-center gap-1">
-                Made with passion using Google API and Material 3 Guidelines.
+                Created with Gemini 3.5 Flash and Not affiliated with Google.
                 <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Live Connected
             </p>
         </footer>
@@ -925,6 +925,15 @@
         let isMuted = false;
         let stormAudio = null;
         let localCityCoords = null;
+
+        function getAbortSignal(ms) {
+            if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+                return AbortSignal.timeout(ms);
+            }
+            const controller = new AbortController();
+            setTimeout(() => controller.abort(), ms);
+            return controller.signal;
+        }
 
         function initStormAudio() {
             if (!stormAudio) {
@@ -1597,7 +1606,7 @@
                 try {
                     const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=en`, {
                         headers: { 'Accept-Language': 'en' },
-                        signal: AbortSignal.timeout(1500)
+                        signal: getAbortSignal(4000)
                     });
                     const revData = await revRes.json();
                     if (revData && revData.display_name) {
@@ -1615,7 +1624,7 @@
                 try {
                     const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1`, {
                         headers: { 'Accept-Language': 'en' },
-                        signal: AbortSignal.timeout(1500)
+                        signal: getAbortSignal(4000)
                     });
                     const geoData = await geoRes.json();
                     if (geoData && geoData.length > 0) {
@@ -1630,11 +1639,11 @@
 
             try {
                 const weatherPromise = fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code,precipitation_probability,precipitation,relative_humidity_2m,wind_speed_10m,uv_index,dew_point_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=auto`, {
-                    signal: AbortSignal.timeout(4000)
+                    signal: getAbortSignal(6000)
                 });
 
                 const aqPromise = fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,pm2_5,pm10,ozone,nitrogen_dioxide,sulfur_dioxide,carbon_monoxide&hourly=us_aqi&timezone=auto`, {
-                    signal: AbortSignal.timeout(4000)
+                    signal: getAbortSignal(6000)
                 })
                     .then(res => res.json())
                     .catch(e => {
@@ -1782,7 +1791,7 @@ Format of JSON:
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
-                    signal: AbortSignal.timeout(6000)
+                    signal: getAbortSignal(8000)
                 });
 
                 if (response.status === 429) {
@@ -1857,6 +1866,14 @@ Format of JSON:
             const aiGradientBar = document.getElementById("ai-gradient-bar");
 
             const isStormAlert = instantData.condition === "Stormy" || (instantData.windKph * 0.621371) > 47; // wind speed > 47 mph (75 kph)
+
+            if (!isAIEnabled && !isStormAlert) {
+                if (aiSection) aiSection.classList.add("hidden");
+                if (aiShimmer) aiShimmer.classList.add("hidden");
+                if (aiGradientBar) aiGradientBar.classList.add("hidden");
+                toggleShimmers(false);
+                return;
+            }
 
             // Always show the AI weather summary section when the option is enabled (or during storm alerts)
             if (isAIEnabled || isStormAlert) {
@@ -2994,10 +3011,10 @@ Format of JSON:
             const normalized = cityName.toLowerCase();
             const copy = JSON.parse(JSON.stringify(defaultMockData));
             copy.location = cityName.charAt(0).toUpperCase() + cityName.slice(1);
+            
+            // Set coordinates based on query
             if (normalized.includes("tokyo") || normalized.includes("japan")) {
                 copy.tempC = 22;
-                copy.condition = "Cloudy";
-                copy.conditionDesc = "Gentle cherry blossom breezes under overcast skies";
                 copy.lat = 35.6762;
                 copy.lon = 139.6503;
             } else if (normalized.includes("new york")) {
@@ -3010,23 +3027,61 @@ Format of JSON:
                 copy.lat = -33.8688;
                 copy.lon = 151.2093;
             } else {
-                copy.lat = 51.5074;
-                copy.lon = -0.1278;
+                // If it is coordinates format (e.g. "lat, lon"), extract them if possible
+                const coordMatch = normalized.match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);
+                if (coordMatch) {
+                    copy.lat = parseFloat(coordMatch[1]);
+                    copy.lon = parseFloat(coordMatch[2]);
+                } else {
+                    copy.lat = 51.5074;
+                    copy.lon = -0.1278;
+                }
             }
+
+            // Determine mock condition based on search query or fallback to a standard cycle
+            const isStormQuery = normalized.includes("storm") || normalized.includes("severe");
+            const isRainQuery = normalized.includes("rain") || normalized.includes("drizzle") || normalized.includes("shower");
+            const isSnowQuery = normalized.includes("snow") || normalized.includes("ice") || normalized.includes("freeze") || normalized.includes("hail");
+
+            if (isStormQuery) {
+                copy.condition = "Stormy";
+                copy.conditionDesc = "Severe storm conditions active";
+            } else if (isRainQuery) {
+                copy.condition = "Rainy";
+                copy.conditionDesc = "Continuous light to moderate rain showers";
+            } else if (isSnowQuery) {
+                copy.condition = "Snowy";
+                copy.conditionDesc = "Light snow and freezing temperatures";
+            } else {
+                copy.condition = "Sunny";
+                copy.conditionDesc = "Mostly clear sunny conditions";
+            }
+
             // Generate 24 hours of hourly mock data dynamically starting from current hour
             const baseHour = new Date();
             copy.hourly = [];
-            const conditions = ["Sunny", "Cloudy", "Rainy", "Snowy", "Stormy"];
             for (let i = 0; i < 24; i++) {
                 const hDate = new Date(baseHour.getTime() + i * 3600000);
                 const tempOffset = Math.sin((hDate.getHours() - 6) / 24 * Math.PI * 2) * 5;
-                const cond = conditions[(Math.floor(i / 3) + Math.floor(copy.tempC)) % conditions.length];
+                
+                let cond = "Sunny";
+                if (isStormQuery) {
+                    cond = "Stormy";
+                } else if (isRainQuery) {
+                    cond = i < 4 ? "Rainy" : (i < 12 ? "Cloudy" : "Sunny");
+                } else if (isSnowQuery) {
+                    cond = "Snowy";
+                } else {
+                    const hourVal = hDate.getHours();
+                    cond = (hourVal >= 6 && hourVal <= 18) ? "Sunny" : "Cloudy";
+                }
+
                 copy.hourly.push({
                     time: format12Hour(hDate),
                     tempC: Math.round(copy.tempC + tempOffset),
                     condition: cond,
-                    pop: Math.max(0, Math.min(100, Math.round((tempOffset + 5) * 10))),
-                    precipitation: cond === "Rainy" ? 1.5 : cond === "Stormy" ? 5.0 : 0,
+                    pop: cond === "Rainy" ? 80 : (cond === "Stormy" ? 95 : (cond === "Snowy" ? 70 : 0)),
+                    precipitation: cond === "Rainy" ? 1.5 : (cond === "Stormy" ? 5.0 : 0),
                     humidity: Math.max(30, Math.min(100, Math.round(60 + tempOffset * 2))),
                     windKph: Math.max(2, Math.round(15 + tempOffset)),
                     uv: Math.max(0, Math.round(4 + tempOffset / 2)),
@@ -3255,7 +3310,7 @@ Format of JSON:
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
-                    signal: AbortSignal.timeout(5000)
+                    signal: getAbortSignal(6000)
                 });
 
                 if (response.status === 429) {
