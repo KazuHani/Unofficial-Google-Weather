@@ -236,10 +236,10 @@
                                 class="px-4 py-2.5 rounded-full text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all flex items-center gap-1.5">
                                 <i class="fa-solid fa-check"></i> Save Key
                             </button>
-                            <button id="clear-api-key-btn"
-                                class="px-4 py-2.5 rounded-full text-xs font-semibold border border-slate-200 dark:border-zinc-850 text-slate-655 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-900/80 transition-all">
-                                Clear
-                            </button>
+                             <button id="clear-api-key-btn"
+                                 class="px-4 py-2.5 rounded-full text-xs font-semibold border border-slate-200 dark:border-zinc-850 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-900/80 transition-all">
+                                 Clear
+                             </button>
                             <span id="key-validation-status" class="text-xs font-semibold hidden pl-1"></span>
                         </div>
                     </div>
@@ -269,22 +269,22 @@
 
                 <!-- Instructions Section -->
                 <div
-                    class="p-4 bg-indigo-55/40 dark:bg-indigo-950/20 border border-indigo-100/50 dark:border-indigo-900/30 rounded-3xl space-y-2.5">
+                     class="p-4 bg-indigo-50/40 dark:bg-indigo-950/20 border border-indigo-100/50 dark:border-indigo-900/30 rounded-3xl space-y-2.5">
                     <h5 class="text-xs font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">
                         <i class="fa-solid fa-circle-info"></i> How to get a Gemini API Key:
                     </h5>
                     <ol
                         class="list-decimal list-inside text-[11px] text-slate-600 dark:text-slate-400 space-y-2 leading-relaxed">
-                        <li class="pl-1">Go to the <a href="https://aistudio.google.com/" target="_blank"
-                                class="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold inline-flex items-center gap-0.5">Google
-                                AI Studio <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a>.</li>
-                        <li class="pl-1">Sign in with your Google account.</li>
-                        <li class="pl-1">Click the <strong class="text-slate-705 dark:text-white">"Get API key"</strong>
-                            button.</li>
-                        <li class="pl-1">Click <strong class="text-slate-705 dark:text-white">"Create API key"</strong>
-                            and copy the generated key.</li>
-                        <li class="pl-1">Paste the key into the input field above and click <strong
-                                class="text-slate-705 dark:text-white">"Save Key"</strong>.</li>
+                         <li class="pl-1">Go to the <a href="https://aistudio.google.com/" target="_blank"
+                                 class="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold inline-flex items-center gap-0.5">Google
+                                 AI Studio <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a>.</li>
+                         <li class="pl-1">Sign in with your Google account.</li>
+                         <li class="pl-1">Click the <strong class="text-slate-700 dark:text-white">"Get API key"</strong>
+                             button.</li>
+                         <li class="pl-1">Click <strong class="text-slate-700 dark:text-white">"Create API key"</strong>
+                             and copy the generated key.</li>
+                         <li class="pl-1">Paste the key into the input field above and click <strong
+                                 class="text-slate-700 dark:text-white">"Save Key"</strong>.</li>
                     </ol>
                 </div>
             </div>
@@ -295,8 +295,6 @@
     <!-- Main Content Wrapper -->
     <div class="relative z-10 w-full min-h-screen flex flex-col px-3 sm:px-6 lg:px-8 py-3 sm:py-4 layout-transition">
 
-        <!-- Header -->
-        <!-- Header -->
         <header
             class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4 md:mb-5 flex-shrink-0 layout-transition">
             <!-- App Logo and Brand -->
@@ -306,12 +304,12 @@
                     class="p-2.5 bg-white/80 dark:bg-zinc-950/80 rounded-2xl shadow-sm border border-transparent dark:border-zinc-800/50 backdrop-blur-md flex items-center justify-center">
                     <img src="images/cloud.png" class="w-8 h-8 object-contain" alt="Unofficial Google Weather Logo">
                 </div>
-                <div>
-                    <h1
-                        class="font-google font-bold text-xl tracking-tight text-slate-800 dark:text-white flex items-center gap-1.5">
-                        Unofficial <br> Google Weather
-                    </h1>
-                </div>
+                 <div>
+                     <h1
+                         class="font-google font-bold text-xl tracking-tight text-slate-800 dark:text-white leading-tight">
+                         Unofficial <br class="lg:hidden"> Google Weather
+                     </h1>
+                 </div>
             </div>
 
             <!-- Material 3 Premium Tab Bar -->
@@ -325,7 +323,7 @@
                     </button>
                     <!-- Tab 2: Saved Locations -->
                     <button id="tab-watchlist"
-                        class="px-5 py-2.5 rounded-full font-google text-xs font-bold transition-all duration-300 flex items-center gap-1.5 text-slate-655 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-900/60">
+                        class="px-5 py-2.5 rounded-full font-google text-xs font-bold transition-all duration-300 flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-900/60">
                         <i class="fa-solid fa-map-pin text-sm"></i> Saved Locations
                         <span id="watchlist-count-badge"
                             class="ml-1 px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-zinc-800 text-slate-800 dark:text-slate-300 text-[10px] font-bold">3</span>
@@ -351,25 +349,25 @@
 
                 <!-- System Controls Group -->
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <!-- Temp Unit Switcher -->
-                    <div
-                        class="flex items-center bg-white/70 dark:bg-zinc-950/70 p-1.5 rounded-full border border-slate-300/60 dark:border-zinc-800/60 backdrop-blur-md shadow-sm">
-                        <button id="btn-unit-c"
-                            class="px-3.5 py-1.5 rounded-full font-google text-xs font-semibold bg-indigo-600 text-white shadow-sm transition-all">°C</button>
-                        <button id="btn-unit-f"
-                            class="px-3.5 py-1.5 rounded-full font-google text-xs font-semibold text-slate-655 dark:text-slate-400 transition-all hover:bg-slate-100 dark:hover:bg-zinc-900/80">°F</button>
-                    </div>
+                     <!-- Temp Unit Switcher -->
+                     <div
+                         class="flex items-center bg-white/70 dark:bg-zinc-950/70 p-1.5 rounded-full border border-slate-300/60 dark:border-zinc-800/60 backdrop-blur-md shadow-sm">
+                         <button id="btn-unit-c"
+                             class="px-3.5 py-1.5 rounded-full font-google text-xs font-semibold bg-indigo-600 text-white shadow-sm transition-all">°C</button>
+                         <button id="btn-unit-f"
+                             class="px-3.5 py-1.5 rounded-full font-google text-xs font-semibold text-slate-600 dark:text-slate-400 transition-all hover:bg-slate-100 dark:hover:bg-zinc-900/80">°F</button>
+                     </div>
 
-                    <!-- Theme Toggle -->
-                    <button id="dark-mode-toggle"
-                        class="p-3 bg-white/70 dark:bg-zinc-950/70 hover:bg-slate-100 dark:hover:bg-zinc-900/80 rounded-full border border-slate-300/60 dark:border-zinc-800/60 backdrop-blur-md shadow-sm transition-all hover:scale-105 active:scale-95 text-slate-655 dark:text-yellow-400">
-                        <i class="fa-solid fa-sun-plant-wilt dark:hidden text-lg"></i>
-                        <i class="fa-solid fa-moon hidden dark:inline text-lg"></i>
-                    </button>
+                     <!-- Theme Toggle -->
+                     <button id="dark-mode-toggle"
+                         class="p-3 bg-white/70 dark:bg-zinc-950/70 hover:bg-slate-100 dark:hover:bg-zinc-900/80 rounded-full border border-slate-300/60 dark:border-zinc-800/60 backdrop-blur-md shadow-sm transition-all hover:scale-105 active:scale-95 text-slate-600 dark:text-yellow-400">
+                         <i class="fa-solid fa-sun-plant-wilt dark:hidden text-lg"></i>
+                         <i class="fa-solid fa-moon hidden dark:inline text-lg"></i>
+                     </button>
 
-                    <!-- Settings Toggle Button -->
-                    <button id="settings-toggle"
-                        class="relative p-3 bg-white/70 dark:bg-zinc-950/70 hover:bg-slate-100 dark:hover:bg-zinc-900/80 rounded-full border border-slate-300/60 dark:border-zinc-800/60 backdrop-blur-md shadow-sm transition-all hover:scale-105 active:scale-95 text-slate-655 dark:text-indigo-400"
+                     <!-- Settings Toggle Button -->
+                     <button id="settings-toggle"
+                         class="relative p-3 bg-white/70 dark:bg-zinc-950/70 hover:bg-slate-100 dark:hover:bg-zinc-900/80 rounded-full border border-slate-300/60 dark:border-zinc-800/60 backdrop-blur-md shadow-sm transition-all hover:scale-105 active:scale-95 text-slate-600 dark:text-indigo-400"
                         title="Settings">
                         <i class="fa-solid fa-gear text-lg"></i>
                         <!-- Notification Dot -->
@@ -395,8 +393,8 @@
         </div>
 
         <!-- Severe Weather Alert Banner (Threat to Life) -->
-        <div id="storm-warning-banner"
-            class="hidden mb-6 bg-gradient-to-r from-red-650 via-rose-600 to-red-700 dark:from-red-950 dark:via-rose-950 dark:to-red-900 border border-red-500/30 text-white rounded-5xl p-5 shadow-2xl relative overflow-hidden animate-pulse-glow">
+         <div id="storm-warning-banner"
+             class="hidden mb-6 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 dark:from-red-950 dark:via-rose-950 dark:to-red-900 border border-red-500/30 text-white rounded-5xl p-5 shadow-2xl relative overflow-hidden animate-pulse-glow">
             <div class="absolute -top-12 -left-12 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-start gap-4">
@@ -540,7 +538,7 @@
 
                 <!-- Primary Weather Hero Card (Renders Instantly in Phase 1) -->
                 <div
-                    class="relative bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl border border-transparent dark:border-transparent rounded-5xl p-4 sm:p-5 shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 group layout-transition flex-shrink-0">
+                    class="relative bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl border border-transparent dark:border-transparent rounded-3xl sm:rounded-5xl p-4 sm:p-5 shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 group layout-transition flex-shrink-0">
                     <div
                         class="absolute -top-12 -right-12 w-48 h-48 bg-amber-400/20 rounded-full blur-3xl group-hover:bg-amber-400/35 transition-all duration-700">
                     </div>
@@ -605,7 +603,7 @@
                 <div class="grid grid-cols-2 gap-2.5 sm:gap-3 layout-transition flex-shrink-0">
                     <!-- Card 1: Air Quality Index -->
                     <div id="card-aqi"
-                        class="bg-white/40 dark:bg-zinc-950/40 backdrop-blur-lg border border-transparent dark:border-transparent rounded-4xl p-3 sm:p-3.5 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-[0.97] cursor-pointer transition-all layout-transition focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        class="bg-white/40 dark:bg-zinc-950/40 backdrop-blur-lg border border-transparent dark:border-transparent rounded-2xl sm:rounded-4xl p-3 sm:p-3.5 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-[0.97] cursor-pointer transition-all layout-transition focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                         tabindex="0" role="button" aria-label="Air Quality Details">
                         <div class="flex justify-between items-center mb-1 text-slate-500 dark:text-slate-400">
                             <span class="text-[11px] font-semibold">Air Quality</span>
@@ -620,7 +618,7 @@
 
                     <!-- Card 2: UV Index -->
                     <div id="card-uv"
-                        class="bg-white/40 dark:bg-zinc-950/40 backdrop-blur-lg border border-transparent dark:border-transparent rounded-4xl p-3 sm:p-3.5 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-[0.97] cursor-pointer transition-all relative overflow-hidden layout-transition focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        class="bg-white/40 dark:bg-zinc-950/40 backdrop-blur-lg border border-transparent dark:border-transparent rounded-2xl sm:rounded-4xl p-3 sm:p-3.5 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-[0.97] cursor-pointer transition-all relative overflow-hidden layout-transition focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                         tabindex="0" role="button" aria-label="UV Index Details">
                         <div class="flex justify-between items-center mb-1 text-slate-500 dark:text-slate-400">
                             <span class="text-[11px] font-semibold">UV Index</span>
@@ -637,7 +635,7 @@
 
                     <!-- Card 3: Wind Velocity -->
                     <div id="card-wind"
-                        class="bg-white/40 dark:bg-zinc-950/40 backdrop-blur-lg border border-transparent dark:border-transparent rounded-4xl p-3 sm:p-3.5 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-[0.97] cursor-pointer transition-all layout-transition focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        class="bg-white/40 dark:bg-zinc-950/40 backdrop-blur-lg border border-transparent dark:border-transparent rounded-2xl sm:rounded-4xl p-3 sm:p-3.5 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-[0.97] cursor-pointer transition-all layout-transition focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                         tabindex="0" role="button" aria-label="Wind Details">
                         <div class="flex justify-between items-center mb-1 text-slate-500 dark:text-slate-400">
                             <span class="text-[11px] font-semibold">Wind Speed</span>
@@ -655,7 +653,7 @@
 
                     <!-- Card 4: Humidity Level -->
                     <div id="card-humidity"
-                        class="bg-white/40 dark:bg-zinc-950/40 backdrop-blur-lg border border-transparent dark:border-transparent rounded-4xl p-3 sm:p-3.5 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-[0.97] cursor-pointer transition-all layout-transition focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        class="bg-white/40 dark:bg-zinc-950/40 backdrop-blur-lg border border-transparent dark:border-transparent rounded-2xl sm:rounded-4xl p-3 sm:p-3.5 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-[0.97] cursor-pointer transition-all layout-transition focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                         tabindex="0" role="button" aria-label="Humidity Details">
                         <div class="flex justify-between items-center mb-1 text-slate-500 dark:text-slate-400">
                             <span class="text-[11px] font-semibold">Humidity</span>
@@ -671,7 +669,7 @@
 
                 <!-- Local Weather Map Card -->
                 <div
-                    class="bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl border border-transparent dark:border-transparent rounded-5xl p-4 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden relative layout-transition flex-shrink-0">
+                    class="bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl border border-transparent dark:border-transparent rounded-3xl sm:rounded-5xl p-4 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden relative layout-transition flex-shrink-0">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                         <div class="flex items-center gap-1.5">
                             <div
@@ -708,7 +706,7 @@
 
             <!-- RIGHT COLUMN: Hourly slider, Weekly lists & Solar trackers (7 cols) -->
             <section
-                class="w-full lg:w-[60%] flex flex-col gap-3 sm:gap-4 layout-transition flex-shrink-0 column-right">
+                class="w-full lg:flex-1 lg:min-w-0 flex flex-col gap-3 sm:gap-4 layout-transition column-right">
 
                 <!-- Rain Minutely/Hourly Forecast Card (Google Weather style) -->
                 <div id="rain-forecast-card"
@@ -758,6 +756,58 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Heatwave Forecast Card (Google Weather style) -->
+                <div id="heat-forecast-card"
+                    class="hidden bg-white/40 dark:bg-zinc-950/40 backdrop-blur-xl border border-orange-500/20 dark:border-orange-500/10 rounded-5xl p-5 shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden layout-transition flex-shrink-0">
+                    <div class="flex flex-col gap-4 text-left">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 id="heat-card-title"
+                                    class="font-google font-extrabold text-sm sm:text-base text-slate-800 dark:text-white leading-none">
+                                    Heatwave continuing for about 2 hours
+                                </h3>
+                                <p id="heat-card-subtitle"
+                                    class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-2">
+                                    Extreme heat expected to reach 36°C
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Heat intensity graph -->
+                        <div class="w-full mt-1 relative">
+                            <!-- Y-Axis Labels and Horizontal Grid Lines -->
+                            <div
+                                class="flex flex-col gap-[18px] text-[9px] font-bold text-slate-400 dark:text-slate-500 w-full relative z-0">
+                                <div class="flex items-center gap-3">
+                                    <span id="heat-y-label-heavy" class="w-12 text-right opacity-80">Extreme</span>
+                                    <div class="flex-1 h-px bg-slate-200/40 dark:bg-zinc-800/40"></div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span id="heat-y-label-moderate" class="w-12 text-right opacity-80">Severe</span>
+                                    <div class="flex-1 h-px bg-slate-200/40 dark:bg-zinc-800/40"></div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span id="heat-y-label-light" class="w-12 text-right opacity-80">Moderate</span>
+                                    <div class="flex-1 h-px bg-slate-200/40 dark:bg-zinc-800/40"></div>
+                                </div>
+                            </div>
+
+                            <!-- Graph Bars Container (overlayed on grid lines) -->
+                            <div id="heat-bars-container"
+                                class="absolute left-[64px] right-0 top-0.5 bottom-1 h-[60px] z-10">
+                                <!-- Line chart and points will be dynamically inserted here -->
+                            </div>
+
+                            <!-- X-Axis Labels Container -->
+                            <div id="heat-times-container"
+                                class="flex justify-around ml-[64px] mt-2.5 text-[9px] font-bold text-slate-400 dark:text-slate-500">
+                                <!-- Time labels will be dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
                 <!-- Hourly Trend Card -->
                 <div
@@ -866,7 +916,7 @@
                 class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5 pb-3 border-b border-slate-200/40 dark:border-zinc-800/40">
                 <div class="flex items-center gap-2">
                     <div
-                        class="p-2 bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-550 dark:text-indigo-400 rounded-2xl">
+                        class="p-2 bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-500 dark:text-indigo-400 rounded-2xl">
                         <i class="fa-solid fa-map-pin text-lg"></i>
                     </div>
                     <div class="text-left">
@@ -953,21 +1003,23 @@
                     tabFocused.className = "px-5 py-2.5 rounded-full font-google text-xs font-bold transition-all duration-300 flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm";
                 }
                 if (tabWatchlist) {
-                    tabWatchlist.className = "px-5 py-2.5 rounded-full font-google text-xs font-bold transition-all duration-300 flex items-center gap-1.5 text-slate-650 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-900/60";
+                    tabWatchlist.className = "px-5 py-2.5 rounded-full font-google text-xs font-bold transition-all duration-300 flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-900/60";
                 }
                 if (mainContent) mainContent.classList.remove("hidden");
                 if (watchlistSection) watchlistSection.classList.add("hidden");
+                triggerEntranceAnimation();
             } else if (target === "watchlist") {
                 if (tabWatchlist) {
                     tabWatchlist.className = "px-5 py-2.5 rounded-full font-google text-xs font-bold transition-all duration-300 flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm";
                 }
                 if (tabFocused) {
-                    tabFocused.className = "px-5 py-2.5 rounded-full font-google text-xs font-bold transition-all duration-300 flex items-center gap-1.5 text-slate-650 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-900/60";
+                    tabFocused.className = "px-5 py-2.5 rounded-full font-google text-xs font-bold transition-all duration-300 flex items-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-900/60";
                 }
                 if (mainContent) mainContent.classList.add("hidden");
                 if (watchlistSection) watchlistSection.classList.remove("hidden");
 
                 updateWatchlistWeather();
+                triggerEntranceAnimation();
             }
         }
 
@@ -1002,7 +1054,7 @@
             const heroHighlow = document.getElementById("saved-loc-hero-highlow");
             if (heroHighlow) {
                 heroHighlow.innerHTML = `
-                    <span class="text-rose-550"><i class="fa-solid fa-arrow-up"></i> H: ${formatTemp(data.highC)}°</span>
+                    <span class="text-rose-500"><i class="fa-solid fa-arrow-up"></i> H: ${formatTemp(data.highC)}°</span>
                     <span class="text-indigo-500"><i class="fa-solid fa-arrow-down"></i> L: ${formatTemp(data.lowC)}°</span>
                 `;
             }
@@ -1593,6 +1645,49 @@
                 return copy;
             }
 
+            // Handle heatwave mock trigger for testing heatwave forecast card
+            if (cleanQuery.includes("heat") || cleanQuery.includes("heatwave") || cleanQuery.includes("hot")) {
+                const copy = JSON.parse(JSON.stringify(defaultMockData));
+                copy.location = "Heatwave Warning Zone";
+                copy.tempC = 36;
+                copy.condition = "Sunny";
+                copy.conditionDesc = "Extreme heatwave active with temperatures reaching 36°C";
+                copy.highC = 38;
+                copy.lowC = 26;
+                copy.humidity = 40;
+                copy.windKph = 8;
+                copy.windDir = getWindDirectionText(135);
+                copy.windDirVal = 135;
+                copy.uvIndex = 11;
+                copy.airQuality = "Moderate (68 AQI)";
+                copy.airQualityValue = 68;
+                copy.sunrise = "05:01 AM";
+                copy.sunset = "09:12 PM";
+
+                const nowTime = new Date();
+                copy.hourly = copy.hourly.map((h, i) => {
+                    const hDate = new Date(nowTime.getTime() + i * 3600000);
+                    h.time = format12Hour(hDate);
+                    if (i < 4) {
+                        h.condition = "Sunny";
+                        h.tempC = 36 + Math.round(Math.sin(i) * 2);
+                    } else if (i < 8) {
+                        h.condition = "Cloudy";
+                        h.tempC = 33 - (i - 4);
+                    } else {
+                        h.condition = "Night";
+                        h.tempC = 25 - (i - 8) / 2;
+                    }
+                    h.pop = 0;
+                    h.precipitation = 0;
+                    return h;
+                });
+
+                copy.lat = 25.2048;
+                copy.lon = 55.2708;
+                return copy;
+            }
+
             let lat = 51.5074;
             let lon = -0.1278;
             let resolvedName = cityName;
@@ -1838,6 +1933,8 @@ Format of JSON:
             const loader = document.getElementById("loader-overlay");
             const loaderTitle = document.getElementById("loader-title");
             if (loaderTitle) loaderTitle.textContent = `Querying weather for ${cityName}...`;
+            // DO NOT UNHIDE THE LOADER OVERLAY. The user explicitly requested to keep it hidden.
+            // if (loader) loader.classList.remove("hidden");
 
             startLoadingBar();
 
@@ -1854,6 +1951,7 @@ Format of JSON:
                 completeLoadingBar();
                 setTimeout(() => {
                     if (loader) loader.classList.add("hidden");
+                    triggerEntranceAnimation();
                 }, 100);
             }
 
@@ -2146,7 +2244,7 @@ Format of JSON:
 
                     // Trigger height transition on next frame
                     setTimeout(() => {
-                        bar.style.height = `${heightPercent || 4}%`; // Give 4% base line for visual neatness even if dry
+                        bar.style.height = `${heightPercent}%`; // Set to heightPercent directly
                     }, 50 + idx * 40);
                 });
             }
@@ -2155,11 +2253,270 @@ Format of JSON:
         }
 
         /*
+         * Heatwave Forecast Card Calculator & Renderer
+         */
+        function updateHeatForecastCard(data) {
+            const heatCard = document.getElementById("heat-forecast-card");
+            if (!heatCard) return;
+
+            const isHeatwave = (hour) => {
+                return hour.tempC >= 25;
+            };
+
+            // Check if there is heatwave conditions in the next 1 or 2 hours (indices 0, 1, 2)
+            const nextHours = data.hourly.slice(0, 3);
+            const hasUpcomingHeat = nextHours.some(isHeatwave);
+
+            if (!hasUpcomingHeat) {
+                heatCard.classList.add("hidden");
+                return;
+            }
+
+            // Find the first hour from now that will experience heatwave temperatures
+            const firstHeatIdx = data.hourly.findIndex(isHeatwave);
+            if (firstHeatIdx < 0) {
+                heatCard.classList.add("hidden");
+                return;
+            }
+
+            // Calculate consecutive hours of heatwave starting from firstHeatIdx
+            let durationHours = 0;
+            for (let i = firstHeatIdx; i < data.hourly.length; i++) {
+                if (isHeatwave(data.hourly[i])) {
+                    durationHours++;
+                } else {
+                    break;
+                }
+            }
+
+            // Determine if the heatwave spans multiple days in the extended forecast
+            // Check daily forecast for consecutive days with max temp >= 30C or 25C
+            let dailyHeatwaveDays = 0;
+            if (data.forecast) {
+                for (let i = 0; i < data.forecast.length; i++) {
+                    if (data.forecast[i].highC >= 25) {
+                        dailyHeatwaveDays++;
+                    } else {
+                        if (dailyHeatwaveDays > 0) break;
+                    }
+                }
+            }
+
+            // Determine max temperature within the heatwave segment
+            let maxTemp = 0;
+            for (let i = firstHeatIdx; i < firstHeatIdx + durationHours; i++) {
+                const hour = data.hourly[i];
+                if (hour.tempC > maxTemp) {
+                    maxTemp = hour.tempC;
+                }
+            }
+
+            let heatDesc = "Moderate heat";
+            if (maxTemp >= 35) {
+                heatDesc = "Extreme heatwave";
+            } else if (maxTemp >= 30) {
+                heatDesc = "Severe heatwave";
+            }
+
+            // Formulate title & subtitle text
+            let title = "";
+            let subtitle = "";
+            const firstHeatHour = data.hourly[firstHeatIdx];
+            const stopHour = data.hourly[firstHeatIdx + durationHours];
+            const endTimeStr = stopHour ? stopHour.time : null;
+
+            // Generate dynamic duration string based on duration details
+            let durationStr = "";
+            if (dailyHeatwaveDays >= 7) {
+                durationStr = "a week";
+            } else if (dailyHeatwaveDays >= 2) {
+                durationStr = `${dailyHeatwaveDays} days`;
+            } else if (durationHours >= 18) {
+                durationStr = "all day";
+            } else {
+                // If it's a short duration, e.g. 1 hour, show 3 hours or the calculated hour count
+                const adjustedHours = durationHours === 1 ? 3 : durationHours;
+                durationStr = `about ${adjustedHours} hours`;
+            }
+
+            if (firstHeatIdx === 0) {
+                // Heatwave active currently
+                title = `Heatwave continuing for ${durationStr}`;
+                subtitle = endTimeStr ? `${heatDesc} with peak of ${formatTemp(maxTemp)}°${isCelsius ? 'C' : 'F'} until ${endTimeStr}` : `${heatDesc} with peak of ${formatTemp(maxTemp)}°${isCelsius ? 'C' : 'F'} continuing for several hours`;
+            } else {
+                // Heatwave starting soon
+                title = `Heatwave starting soon, lasting for ${durationStr}`;
+                subtitle = endTimeStr ? `${heatDesc} expected from ${firstHeatHour.time} until ${endTimeStr}` : `${heatDesc} expected to start around ${firstHeatHour.time}`;
+            }
+
+            const cardTitleEl = document.getElementById("heat-card-title");
+            const cardSubtitleEl = document.getElementById("heat-card-subtitle");
+            if (cardTitleEl) cardTitleEl.textContent = title;
+            if (cardSubtitleEl) cardSubtitleEl.textContent = subtitle;
+
+            // Update Y-axis labels dynamically (Broadened axis: 35C extreme to 15C normal)
+            const labelHeavy = document.getElementById("heat-y-label-heavy");
+            const labelModerate = document.getElementById("heat-y-label-moderate");
+            const labelLight = document.getElementById("heat-y-label-light");
+            if (labelHeavy) labelHeavy.textContent = `Extreme (${formatTemp(35)}°)`;
+            if (labelModerate) labelModerate.textContent = `Severe (${formatTemp(25)}°)`;
+            if (labelLight) labelLight.textContent = `Normal (${formatTemp(15)}°)`;
+
+            // Render heat graph line and labels (next 5 hours starting from current hour)
+            const barsContainer = document.getElementById("heat-bars-container");
+            const timesContainer = document.getElementById("heat-times-container");
+
+            if (barsContainer && timesContainer) {
+                barsContainer.innerHTML = "";
+                timesContainer.innerHTML = "";
+
+                const graphHours = data.hourly.slice(0, 5);
+                const N = graphHours.length;
+
+                // Calculate points: {x, y, temp, condition}
+                // Broaden y-axis range so 15C maps to 0% height and 35C maps to 100% height.
+                const points = graphHours.map((hour, idx) => {
+                    const heightPercent = Math.max(0, Math.min(100, (hour.tempC - 15) * 5));
+                    const x = ((2 * idx + 1) / (2 * N)) * 100;
+                    const y = 90 - (heightPercent * 0.65);
+                    return {
+                        x,
+                        y,
+                        tempC: hour.tempC,
+                        condition: hour.condition,
+                        time: hour.time
+                    };
+                });
+
+                // Generate SVG path description for the line
+                let linePath = "";
+                let areaPath = "";
+
+                if (points.length > 0) {
+                    // Line path
+                    linePath = `M ${points[0].x} ${points[0].y}`;
+                    for (let i = 0; i < points.length - 1; i++) {
+                        const p0 = points[i];
+                        const p1 = points[i + 1];
+                        const cp1x = p0.x + (p1.x - p0.x) / 2;
+                        const cp1y = p0.y;
+                        const cp2x = p0.x + (p1.x - p0.x) / 2;
+                        const cp2y = p1.y;
+                        linePath += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p1.x} ${p1.y}`;
+                    }
+
+                    // Area path
+                    const bottomY = 100;
+                    areaPath = `M ${points[0].x} ${bottomY} L ${points[0].x} ${points[0].y}`;
+                    for (let i = 0; i < points.length - 1; i++) {
+                        const p0 = points[i];
+                        const p1 = points[i + 1];
+                        const cp1x = p0.x + (p1.x - p0.x) / 2;
+                        const cp1y = p0.y;
+                        const cp2x = p0.x + (p1.x - p0.x) / 2;
+                        const cp2y = p1.y;
+                        areaPath += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p1.x} ${p1.y}`;
+                    }
+                    areaPath += ` L ${points[points.length - 1].x} ${bottomY} Z`;
+                }
+
+                // Create the SVG element
+                const svgNS = "http://www.w3.org/2000/svg";
+                const svg = document.createElementNS(svgNS, "svg");
+                svg.setAttribute("class", "absolute inset-0 w-full h-full pointer-events-none");
+                svg.setAttribute("viewBox", "0 0 100 100");
+                svg.setAttribute("preserveAspectRatio", "none");
+
+                // Define gradients inside SVG
+                svg.innerHTML = `
+                    <defs>
+                        <linearGradient id="heatwave-line-grad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#fbbf24" />
+                            <stop offset="100%" stop-color="#f59e0b" />
+                        </linearGradient>
+                        <linearGradient id="heatwave-area-grad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.25" />
+                            <stop offset="100%" stop-color="#fbbf24" stop-opacity="0.0" />
+                        </linearGradient>
+                    </defs>
+                `;
+
+                // Add area path
+                const pathArea = document.createElementNS(svgNS, "path");
+                pathArea.setAttribute("d", areaPath);
+                pathArea.setAttribute("fill", "url(#heatwave-area-grad)");
+                svg.appendChild(pathArea);
+
+                // Add line path
+                const pathLine = document.createElementNS(svgNS, "path");
+                pathLine.setAttribute("d", linePath);
+                pathLine.setAttribute("stroke", "url(#heatwave-line-grad)");
+                pathLine.setAttribute("stroke-width", "3");
+                pathLine.setAttribute("fill", "none");
+                pathLine.setAttribute("stroke-linecap", "round");
+                svg.appendChild(pathLine);
+
+                barsContainer.appendChild(svg);
+
+                // Render temperature numbers above the points, and invisible interactive zones for tooltips
+                points.forEach((pt, idx) => {
+                    const ptWrapper = document.createElement("div");
+                    ptWrapper.className = "absolute flex flex-col items-center justify-end group -translate-x-1/2 cursor-pointer z-20";
+                    ptWrapper.style.left = `${pt.x}%`;
+                    ptWrapper.style.top = `0%`;
+                    ptWrapper.style.bottom = `${100 - pt.y}%`;
+                    ptWrapper.style.width = "40px";
+
+                    // Temperature value text
+                    const tempLabel = document.createElement("span");
+                    tempLabel.className = "text-[10px] font-bold text-slate-700 dark:text-slate-350 mb-1 select-none pointer-events-none transition-transform group-hover:-translate-y-0.5";
+                    tempLabel.textContent = `${formatTemp(pt.tempC)}°`;
+                    ptWrapper.appendChild(tempLabel);
+
+                    // A bigger dot on the line
+                    const dot = document.createElement("div");
+                    dot.className = "w-2.5 h-2.5 rounded-full bg-amber-400 border border-white dark:border-zinc-900 shadow-sm z-10 transition-transform group-hover:scale-150 translate-y-[35%]";
+                    ptWrapper.appendChild(dot);
+
+                    // Hover Tooltip
+                    const tooltip = document.createElement("span");
+                    tooltip.className = "absolute -top-8 scale-0 transition-all rounded bg-slate-800 dark:bg-zinc-100 px-2 py-1 text-[9px] text-white dark:text-slate-900 group-hover:scale-100 whitespace-nowrap z-30 font-semibold shadow-md pointer-events-none";
+                    tooltip.textContent = `${pt.condition} (${formatTemp(pt.tempC)}°${isCelsius ? 'C' : 'F'})`;
+                    ptWrapper.appendChild(tooltip);
+
+                    // Playhead indicator for index 0
+                    if (idx === 0) {
+                        const playhead = document.createElement("div");
+                        playhead.className = "absolute w-4.5 h-4.5 bg-amber-400/30 rounded-full animate-pulse z-0";
+                        playhead.style.bottom = "-4px";
+                        ptWrapper.appendChild(playhead);
+                    }
+
+                    barsContainer.appendChild(ptWrapper);
+
+                    // X-Axis time label
+                    const timeLabel = document.createElement("span");
+                    timeLabel.className = "w-full text-center whitespace-nowrap opacity-80";
+
+                    const timeParts = pt.time.split(" ");
+                    const hhMm = timeParts[0];
+                    const amPm = timeParts[1] || "";
+                    const hourOnly = hhMm.split(":")[0];
+                    timeLabel.textContent = `${hourOnly} ${amPm}`.trim();
+                    timesContainer.appendChild(timeLabel);
+                });
+            }
+
+            heatCard.classList.remove("hidden");
+        }
+
+        /*
          * UI Renderer & Layout Binder
          */
         function renderWeatherData(data) {
             weatherCache = data;
             updateRainForecastCard(data);
+            updateHeatForecastCard(data);
 
             const theme = themeMap[data.condition] || themeMap["Cloudy"];
             const isDark = document.documentElement.classList.contains("dark");
@@ -2348,6 +2705,26 @@ Format of JSON:
             if (gmapsLink) {
                 gmapsLink.href = `https://www.google.com/maps/@${lat},${lon},10z`;
             }
+        }
+
+        /*
+         * Entrance Animations Trigger Helper
+         */
+        function triggerEntranceAnimation() {
+            const header = document.querySelector("header");
+            const leftCol = document.querySelector("main > section:first-of-type");
+            const rightCol = document.querySelector("main > section:last-of-type");
+            const aiSection = document.getElementById("ai-recommendations-section");
+            const watchlistSection = document.getElementById("watchlist-section");
+
+            const targets = [header, leftCol, rightCol, aiSection, watchlistSection];
+
+            targets.forEach((el) => {
+                if (el) {
+                    el.classList.remove("opacity-0");
+                    el.style.animation = "none";
+                }
+            });
         }
 
         /*
@@ -2798,13 +3175,23 @@ Format of JSON:
                 modalIconBg.className = "p-3 rounded-2xl flex items-center justify-center bg-blue-500/10 dark:bg-blue-500/20";
 
                 const windMph = Math.round(data.windKph * 0.621371);
+                let windDesc = "Perfect for outdoor sports, slightly fresh.";
+                if (windMph < 4) {
+                    windDesc = "Calm air and gentle conditions.";
+                } else if (windMph <= 12) {
+                    windDesc = "Light breeze, ideal for outdoor activities.";
+                } else if (windMph <= 24) {
+                    windDesc = "Fresh breeze, moderate gusts. Hold onto light items.";
+                } else {
+                    windDesc = "Strong winds! Outdoors might be difficult or hazardous.";
+                }
 
                 modalBody.innerHTML = `
                     <div class="bg-gradient-to-br from-blue-500/10 to-indigo-500/5 dark:from-blue-500/20 dark:to-indigo-500/10 border border-blue-500/20 rounded-3xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="text-left">
                             <span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Wind Velocity</span>
                             <h2 class="font-google font-extrabold text-3xl text-slate-800 dark:text-white mt-1">${windMph} mph</h2>
-                            <p class="text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">Wind is blowing from the ${data.windDir || 'NE'} (${data.windDirVal || 0}°). Perfect for outdoor sports, slightly fresh.</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">Wind is blowing from the ${data.windDir || 'NE'} (${data.windDirVal || 0}°). ${windDesc}</p>
                         </div>
                         
                         <!-- Rotating Wind Compass Vector Graphic -->
@@ -3134,9 +3521,34 @@ Format of JSON:
 
         // Location Modal Options Handler
         // Location Modal Options Handler
+        async function fetchIPLocation() {
+            try {
+                const res = await fetch("https://ipapi.co/json/");
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.latitude && data.longitude) {
+                        return {
+                            lat: data.latitude,
+                            lon: data.longitude,
+                            city: data.city || data.region || "Detected Location"
+                        };
+                    }
+                }
+            } catch (e) {
+                console.warn("IP location fallback failed:", e);
+            }
+            return null;
+        }
+
         function triggerGeoLocation() {
             const geoIcon = document.getElementById("geo-icon");
             if (geoIcon) geoIcon.className = "fa-solid fa-spinner animate-spin text-indigo-500";
+
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 8000,
+                maximumAge: 0
+            };
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -3149,16 +3561,40 @@ Format of JSON:
                         await handleSearch(coordsStr);
                         if (geoIcon) geoIcon.className = "fa-solid fa-location-crosshairs text-base";
                     },
-                    () => {
-                        showNotification("Location Bypassed", "Using London as the primary reference weather node.", "info");
-                        localCityCoords = "London";
-                        handleSearch("London");
+                    async (err) => {
+                        console.warn("HTML5 Geolocation failed. Trying IP location fallback...", err);
+                        const ipLoc = await fetchIPLocation();
+                        if (ipLoc) {
+                            const coordsStr = `${ipLoc.lat.toFixed(4)}, ${ipLoc.lon.toFixed(4)}`;
+                            localStorage.setItem("saved_coords", coordsStr);
+                            localCityCoords = coordsStr;
+                            showNotification("Approximate Location", `Pinpointed to ${ipLoc.city} using IP location.`, "info");
+                            await handleSearch(coordsStr);
+                        } else {
+                            showNotification("Location Unavailable", "Unable to detect location. Defaulting to London.", "warning");
+                            localCityCoords = "London";
+                            await handleSearch("London");
+                        }
                         if (geoIcon) geoIcon.className = "fa-solid fa-location-crosshairs text-base";
-                    }
+                    },
+                    options
                 );
             } else {
-                localCityCoords = "London";
-                handleSearch("London");
+                fallbackToIPOrLondon();
+            }
+
+            async function fallbackToIPOrLondon() {
+                const ipLoc = await fetchIPLocation();
+                if (ipLoc) {
+                    const coordsStr = `${ipLoc.lat.toFixed(4)}, ${ipLoc.lon.toFixed(4)}`;
+                    localStorage.setItem("saved_coords", coordsStr);
+                    localCityCoords = coordsStr;
+                    showNotification("Approximate Location", `Pinpointed to ${ipLoc.city} using IP location.`, "info");
+                    await handleSearch(coordsStr);
+                } else {
+                    localCityCoords = "London";
+                    await handleSearch("London");
+                }
                 if (geoIcon) geoIcon.className = "fa-solid fa-location-crosshairs text-base";
             }
         }
@@ -3228,15 +3664,10 @@ Format of JSON:
 
         document.getElementById("geo-btn").addEventListener("click", () => {
             const consent = localStorage.getItem("location_consent");
-            const coords = localStorage.getItem("saved_coords");
             const geoIcon = document.getElementById("geo-icon");
 
-            if (consent === "granted" && coords) {
-                if (geoIcon) geoIcon.className = "fa-solid fa-spinner animate-spin text-indigo-500";
-                localCityCoords = coords;
-                handleSearch(coords).then(() => {
-                    if (geoIcon) geoIcon.className = "fa-solid fa-location-crosshairs text-base";
-                });
+            if (consent === "granted") {
+                triggerGeoLocation();
                 return;
             }
 
@@ -3246,26 +3677,7 @@ Format of JSON:
                 modal.classList.remove("hidden");
                 updateBodyScroll();
             } else {
-                // Fallback directly to geolocation if modal element isn't found
-                if (geoIcon) geoIcon.className = "fa-solid fa-spinner animate-spin text-indigo-500";
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        async (position) => {
-                            const lat = position.coords.latitude;
-                            const lon = position.coords.longitude;
-                            const coordsStr = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-                            localStorage.setItem("saved_coords", coordsStr);
-                            localStorage.setItem("location_consent", "granted");
-                            localCityCoords = coordsStr;
-                            await handleSearch(coordsStr);
-                            if (geoIcon) geoIcon.className = "fa-solid fa-location-crosshairs text-base";
-                        },
-                        () => {
-                            showNotification("Location Warning", "Unable to retrieve location contexts. Check permissions.", "warning");
-                            if (geoIcon) geoIcon.className = "fa-solid fa-location-crosshairs text-base";
-                        }
-                    );
-                }
+                triggerGeoLocation();
             }
         });
 
@@ -3762,6 +4174,14 @@ Format of JSON:
                 handleSearch("London");
             } else {
                 document.getElementById("location-modal").classList.remove("hidden");
+                triggerEntranceAnimation();
+                fetchIPLocation().then(ipLoc => {
+                    if (ipLoc) {
+                        const coordsStr = `${ipLoc.lat.toFixed(4)}, ${ipLoc.lon.toFixed(4)}`;
+                        localCityCoords = coordsStr;
+                        handleSearch(coordsStr);
+                    }
+                });
             }
             updateBodyScroll();
 
