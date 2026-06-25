@@ -245,6 +245,50 @@
                     </div>
                 </div>
 
+                <!-- Weather Data Source Section -->
+                <div class="space-y-3">
+                    <h4 class="font-google font-bold text-sm text-slate-800 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-satellite-dish text-indigo-500"></i> Weather Data Source
+                    </h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                        Choose which provider supplies the live weather data.
+                    </p>
+                    <select id="settings-weather-source"
+                        class="w-full px-4 py-3 rounded-2xl border border-slate-300/60 dark:border-zinc-800/60 bg-white/70 dark:bg-zinc-950/70 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 text-sm cursor-pointer">
+                        <option value="open-meteo">Open-Meteo (free, no key)</option>
+                        <option value="openweathermap">OpenWeatherMap (requires API key)</option>
+                    </select>
+
+                    <!-- OpenWeatherMap key input (shown only when OWM is selected) -->
+                    <div id="owm-key-section" class="hidden space-y-2 pt-1">
+                        <div class="relative">
+                            <input type="password" id="settings-owm-key" placeholder="Enter OpenWeatherMap API Key..."
+                                class="w-full px-4 py-3 pr-10 rounded-2xl border border-slate-300/60 dark:border-zinc-800/60 bg-white/70 dark:bg-zinc-950/70 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 text-sm">
+                            <button type="button" id="toggle-owm-key-visibility"
+                                class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500 transition-colors">
+                                <i class="fa-solid fa-eye text-sm"></i>
+                            </button>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="save-owm-key-btn"
+                                class="px-4 py-2.5 rounded-full text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all flex items-center gap-1.5">
+                                <i class="fa-solid fa-check"></i> Save Key
+                            </button>
+                            <button id="clear-owm-key-btn"
+                                class="px-4 py-2.5 rounded-full text-xs font-semibold border border-slate-200 dark:border-zinc-850 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-900/80 transition-all">
+                                Clear
+                            </button>
+                            <span id="owm-key-status" class="text-xs font-semibold hidden pl-1"></span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                            Get a free key at <a href="https://openweathermap.org/api" target="_blank"
+                                class="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold inline-flex items-center gap-0.5">openweathermap.org/api
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a>.
+                            The "One Call API 3.0" subscription (free tier) must be enabled on your account.
+                        </p>
+                    </div>
+                </div>
+
                 <!-- AI Feature Toggle Section -->
                 <div
                     class="flex items-center justify-between p-4 bg-slate-50 dark:bg-zinc-900/50 rounded-3xl border border-transparent dark:border-transparent">
@@ -455,9 +499,9 @@
                     </div>
                 </div>
                 <h3 class="font-google font-bold text-lg text-slate-800 dark:text-white mb-1" id="loader-title">
-                    Consulting Google Weather...</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4" id="loader-sub">Fetching meteorological
-                    measurements instantly from Google weather databases...</p>
+                    Fetching live weather...</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mb-4" id="loader-sub">Fetching live meteorological
+                    measurements from your selected weather source...</p>
 
                 <!-- Progress Bar -->
                 <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden relative mb-2">
@@ -1567,126 +1611,259 @@
         /*
          * PHASE 1: INSTANT GEOCODING + REAL GOOGLE-WEATHER-DATA EQUIVALENT PULL (under 1s)
          */
+        /*
+         * ============================================================
+         *  WEATHER DATA SOURCE PROVIDERS
+         *  Each provider exposes async fetch(lat, lon) and returns a
+         *  normalized weather object matching the shape that
+         *  renderWeatherData() expects (excluding location/lat/lon,
+         *  which the caller attaches). Register new sources in
+         *  WEATHER_PROVIDERS to make them selectable in Settings.
+         * ============================================================
+         */
+
+        // Shared US AQI -> human readable bucket
+        function describeUsAqi(usAqi) {
+            let aqiDesc = "Good";
+            if (usAqi > 50) aqiDesc = "Moderate";
+            if (usAqi > 100) aqiDesc = "Unhealthy for Sensitive Groups";
+            if (usAqi > 150) aqiDesc = "Unhealthy";
+            if (usAqi > 200) aqiDesc = "Very Unhealthy";
+            if (usAqi > 300) aqiDesc = "Hazardous";
+            return aqiDesc;
+        }
+
+        // OpenWeatherMap condition id -> internal condition label
+        function mapOWMToCondition(id) {
+            if (id >= 200 && id < 300) return "Stormy";
+            if (id >= 300 && id < 600) return "Rainy";
+            if (id >= 600 && id < 700) return "Snowy";
+            if (id >= 700 && id < 800) return "Cloudy"; // mist/fog/haze
+            if (id === 800) return "Sunny";
+            if (id > 800) return "Cloudy"; // clouds
+            return "Cloudy";
+        }
+
+        // Approximate US AQI from PM2.5 (EPA breakpoints) for sources
+        // that don't report US AQI directly.
+        function pm25ToUsAqi(pm) {
+            if (pm == null || isNaN(pm)) return null;
+            const bp = [
+                [0.0, 12.0, 0, 50],
+                [12.1, 35.4, 51, 100],
+                [35.5, 55.4, 101, 150],
+                [55.5, 150.4, 151, 200],
+                [150.5, 250.4, 201, 300],
+                [250.5, 350.4, 301, 400],
+                [350.5, 500.4, 401, 500]
+            ];
+            for (const [cl, ch, il, ih] of bp) {
+                if (pm >= cl && pm <= ch) {
+                    return Math.round(((ih - il) / (ch - cl)) * (pm - cl) + il);
+                }
+            }
+            return pm > 500.4 ? 500 : 0;
+        }
+
+        const DEFAULT_POLLUTANTS = { pm2_5: 8.5, pm10: 12.0, ozone: 35.0, no2: 15.0, so2: 1.2, co: 250 };
+
+        // --- Provider: Open-Meteo (free, no key) -------------------
+        async function fetchOpenMeteoWeather(lat, lon) {
+            const weatherPromise = fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code,precipitation_probability,precipitation,relative_humidity_2m,wind_speed_10m,uv_index,dew_point_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=auto`, {
+                signal: getAbortSignal(6000)
+            });
+
+            const aqPromise = fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,pm2_5,pm10,ozone,nitrogen_dioxide,sulfur_dioxide,carbon_monoxide&hourly=us_aqi&timezone=auto`, {
+                signal: getAbortSignal(6000)
+            })
+                .then(res => res.json())
+                .catch(e => {
+                    console.warn("AQI fetch failed", e);
+                    return null;
+                });
+
+            const [weatherRes, aqData] = await Promise.all([weatherPromise, aqPromise]);
+            const weatherData = await weatherRes.json();
+            if (!weatherData || !weatherData.current || !weatherData.daily || !weatherData.hourly) {
+                throw new Error("Open-Meteo returned no usable data");
+            }
+
+            const currentCondition = mapWMOToCondition(weatherData.current.weather_code);
+
+            const usAqi = aqData && aqData.current ? Math.round(aqData.current.us_aqi) : 32;
+            const aqiDesc = describeUsAqi(usAqi);
+
+            return {
+                tempC: weatherData.current.temperature_2m,
+                condition: currentCondition,
+                conditionDesc: `${currentCondition} conditions with humidity at ${weatherData.current.relative_humidity_2m}%`,
+                highC: weatherData.daily.temperature_2m_max[0],
+                lowC: weatherData.daily.temperature_2m_min[0],
+                humidity: weatherData.current.relative_humidity_2m,
+                windKph: weatherData.current.wind_speed_10m,
+                windDir: getWindDirectionText(weatherData.current.wind_direction_10m),
+                windDirVal: weatherData.current.wind_direction_10m,
+                uvIndex: Math.round(weatherData.daily.uv_index_max[0]),
+                airQuality: `${aqiDesc} (${usAqi} AQI)`,
+                airQualityValue: usAqi,
+                pollutants: aqData && aqData.current ? {
+                    pm2_5: aqData.current.pm2_5,
+                    pm10: aqData.current.pm10,
+                    ozone: aqData.current.ozone,
+                    no2: aqData.current.nitrogen_dioxide,
+                    so2: aqData.current.sulfur_dioxide,
+                    co: aqData.current.carbon_monoxide
+                } : { ...DEFAULT_POLLUTANTS },
+                sunrise: format12Hour(weatherData.daily.sunrise[0]),
+                sunset: format12Hour(weatherData.daily.sunset[0]),
+                hourly: (() => {
+                    const nowTime = Date.now();
+                    let startIndex = 0;
+                    let minDiff = Infinity;
+                    for (let i = 0; i < weatherData.hourly.time.length; i++) {
+                        const diff = Math.abs(new Date(weatherData.hourly.time[i]).getTime() - nowTime);
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            startIndex = i;
+                        }
+                    }
+                    return weatherData.hourly.time.slice(startIndex, startIndex + 24).map((time, idx) => ({
+                        time: format12Hour(time),
+                        tempC: weatherData.hourly.temperature_2m[startIndex + idx],
+                        condition: mapWMOToCondition(weatherData.hourly.weather_code[startIndex + idx]),
+                        pop: weatherData.hourly.precipitation_probability[startIndex + idx] || 0,
+                        precipitation: weatherData.hourly.precipitation ? (weatherData.hourly.precipitation[startIndex + idx] || 0) : 0,
+                        humidity: weatherData.hourly.relative_humidity_2m[startIndex + idx] || 0,
+                        windKph: weatherData.hourly.wind_speed_10m[startIndex + idx] || 0,
+                        uv: weatherData.hourly.uv_index[startIndex + idx] || 0,
+                        dewPoint: weatherData.hourly.dew_point_2m[startIndex + idx] || 0
+                    }));
+                })(),
+                forecast: weatherData.daily.time.slice(0, 7).map((time, idx) => {
+                    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                    const dayName = days[new Date(time).getDay()];
+                    return {
+                        day: dayName,
+                        condition: mapWMOToCondition(weatherData.daily.weather_code[idx]),
+                        highC: weatherData.daily.temperature_2m_max[idx],
+                        lowC: weatherData.daily.temperature_2m_min[idx],
+                        pop: weatherData.daily.precipitation_probability_max[idx] || 0
+                    };
+                })
+            };
+        }
+
+        // --- Provider: OpenWeatherMap (requires user API key) ------
+        async function fetchOpenWeatherMapWeather(lat, lon) {
+            const apiKey = (localStorage.getItem("owm_api_key") || "").trim();
+            if (!apiKey) throw new Error("OpenWeatherMap API key missing");
+
+            const oneCallUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&exclude=minutely,alerts&appid=${apiKey}`;
+            const airUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+
+            const weatherPromise = fetch(oneCallUrl, { signal: getAbortSignal(8000) });
+            const airPromise = fetch(airUrl, { signal: getAbortSignal(8000) })
+                .then(res => res.ok ? res.json() : null)
+                .catch(e => {
+                    console.warn("OWM air quality fetch failed", e);
+                    return null;
+                });
+
+            const [wRes, airData] = await Promise.all([weatherPromise, airPromise]);
+            if (!wRes.ok) {
+                if (wRes.status === 401) throw new Error("Invalid OpenWeatherMap API key");
+                if (wRes.status === 429) throw new Error("OpenWeatherMap rate limit reached");
+                throw new Error(`OpenWeatherMap error ${wRes.status}`);
+            }
+            const d = await wRes.json();
+            if (!d || !d.current || !d.daily || !d.hourly) {
+                throw new Error("OpenWeatherMap returned no usable data");
+            }
+
+            const cur = d.current;
+            const today = d.daily[0];
+            const curCondition = mapOWMToCondition(cur.weather[0].id);
+
+            // Air quality: OWM gives raw components; derive an approximate US AQI from PM2.5.
+            let usAqi = 32;
+            let pollutants = { ...DEFAULT_POLLUTANTS };
+            if (airData && airData.list && airData.list[0]) {
+                const comp = airData.list[0].components;
+                const derived = pm25ToUsAqi(comp.pm2_5);
+                if (derived != null) usAqi = derived;
+                pollutants = {
+                    pm2_5: comp.pm2_5,
+                    pm10: comp.pm10,
+                    ozone: comp.o3,
+                    no2: comp.no2,
+                    so2: comp.so2,
+                    co: comp.co
+                };
+            }
+            const aqiDesc = describeUsAqi(usAqi);
+
+            const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+            return {
+                tempC: cur.temp,
+                condition: curCondition,
+                conditionDesc: `${curCondition} conditions with humidity at ${cur.humidity}%`,
+                highC: today.temp.max,
+                lowC: today.temp.min,
+                humidity: cur.humidity,
+                windKph: (cur.wind_speed || 0) * 3.6, // m/s -> km/h
+                windDir: getWindDirectionText(cur.wind_deg || 0),
+                windDirVal: cur.wind_deg || 0,
+                uvIndex: Math.round(cur.uvi || 0),
+                airQuality: `${aqiDesc} (${usAqi} AQI)`,
+                airQualityValue: usAqi,
+                pollutants: pollutants,
+                sunrise: format12Hour(cur.sunrise * 1000),
+                sunset: format12Hour(cur.sunset * 1000),
+                hourly: d.hourly.slice(0, 24).map(h => ({
+                    time: format12Hour(h.dt * 1000),
+                    tempC: h.temp,
+                    condition: mapOWMToCondition(h.weather[0].id),
+                    pop: Math.round((h.pop || 0) * 100),
+                    precipitation: h.rain ? (h.rain["1h"] || 0) : (h.snow ? (h.snow["1h"] || 0) : 0),
+                    humidity: h.humidity || 0,
+                    windKph: (h.wind_speed || 0) * 3.6,
+                    uv: h.uvi || 0,
+                    dewPoint: h.dew_point || 0
+                })),
+                forecast: d.daily.slice(0, 7).map(dd => ({
+                    day: days[new Date(dd.dt * 1000).getDay()],
+                    condition: mapOWMToCondition(dd.weather[0].id),
+                    highC: dd.temp.max,
+                    lowC: dd.temp.min,
+                    pop: Math.round((dd.pop || 0) * 100)
+                }))
+            };
+        }
+
+        // Registry of selectable weather data sources.
+        const WEATHER_PROVIDERS = {
+            "open-meteo": { id: "open-meteo", label: "Open-Meteo", requiresKey: false, keyStorageKey: null, fetch: fetchOpenMeteoWeather },
+            "openweathermap": { id: "openweathermap", label: "OpenWeatherMap", requiresKey: true, keyStorageKey: "owm_api_key", fetch: fetchOpenWeatherMapWeather }
+        };
+
+        // Resolve the currently-selected provider, falling back to
+        // Open-Meteo when a key-requiring source has no key configured.
+        function getActiveWeatherProvider() {
+            const id = localStorage.getItem("weather_source") || "open-meteo";
+            let provider = WEATHER_PROVIDERS[id] || WEATHER_PROVIDERS["open-meteo"];
+            if (provider.requiresKey) {
+                const key = (localStorage.getItem(provider.keyStorageKey) || "").trim();
+                if (!key) {
+                    showNotification("Weather Data Source", `${provider.label} needs an API key. Add one in Settings — using Open-Meteo for now.`, "warning");
+                    provider = WEATHER_PROVIDERS["open-meteo"];
+                }
+            }
+            return provider;
+        }
+
         async function fetchInstantWeather(cityName) {
             const cleanQuery = cityName.toLowerCase().trim();
-
-            // Handle stormy mock trigger for testing
-            if (cleanQuery.includes("storm") || cleanQuery.includes("hurricane") || cleanQuery.includes("tornado") || cleanQuery.includes("severe")) {
-                const copy = JSON.parse(JSON.stringify(defaultMockData));
-                copy.location = "Severe Storm Alert Area";
-                copy.tempC = 12;
-                copy.condition = "Stormy";
-                copy.conditionDesc = "SEVERE WEATHER ALERT: Heavy torrential rain, severe thunder and lightning, with winds exceeding 60 mph.";
-                copy.highC = 14;
-                copy.lowC = 8;
-                copy.humidity = 95;
-                copy.windKph = 98; // ~61 mph
-                copy.windDir = getWindDirectionText(292.5);
-                copy.windDirVal = 292.5;
-                copy.uvIndex = 1;
-                copy.airQuality = "Moderate (55 AQI)";
-                copy.airQualityValue = 55;
-                copy.sunrise = "05:12 AM";
-                copy.sunset = "09:02 PM";
-                copy.hourly = copy.hourly.map((h, i) => {
-                    h.condition = "Stormy";
-                    h.pop = 95;
-                    h.precipitation = 8.5; // Heavy rain in stormy mock
-                    h.windKph = 90;
-                    return h;
-                });
-                copy.lat = 35.6762; // Mock Tokyo coordinates for map
-                copy.lon = 139.6503;
-                return copy;
-            }
-
-            // Handle rainy mock trigger for testing rain forecast card
-            if (cleanQuery.includes("rain") || cleanQuery.includes("drizzle") || cleanQuery.includes("shower")) {
-                const copy = JSON.parse(JSON.stringify(defaultMockData));
-                copy.location = "Rainy Test Center";
-                copy.tempC = 15;
-                copy.condition = "Rainy";
-                copy.conditionDesc = "Continuous light to moderate rain showers starting now";
-                copy.highC = 17;
-                copy.lowC = 11;
-                copy.humidity = 88;
-                copy.windKph = 14;
-                copy.windDir = getWindDirectionText(180);
-                copy.windDirVal = 180;
-                copy.uvIndex = 2;
-                copy.airQuality = "Good (25 AQI)";
-                copy.airQualityValue = 25;
-                copy.sunrise = "05:42 AM";
-                copy.sunset = "08:15 PM";
-
-                // Let's make it rain for the first 3 hours, then dry
-                const nowTime = new Date();
-                copy.hourly = copy.hourly.map((h, i) => {
-                    const hDate = new Date(nowTime.getTime() + i * 3600000);
-                    h.time = format12Hour(hDate);
-                    if (i < 3) {
-                        h.condition = "Rainy";
-                        h.pop = 80;
-                        h.precipitation = 2.5; // Moderate rain
-                    } else if (i === 3) {
-                        h.condition = "Cloudy";
-                        h.pop = 20;
-                        h.precipitation = 0;
-                    } else {
-                        h.condition = "Sunny";
-                        h.pop = 0;
-                        h.precipitation = 0;
-                    }
-                    return h;
-                });
-
-                copy.lat = 51.5074;
-                copy.lon = -0.1278;
-                return copy;
-            }
-
-            // Handle heatwave mock trigger for testing heatwave forecast card
-            if (cleanQuery.includes("heat") || cleanQuery.includes("heatwave") || cleanQuery.includes("hot")) {
-                const copy = JSON.parse(JSON.stringify(defaultMockData));
-                copy.location = "Heatwave Warning Zone";
-                copy.tempC = 36;
-                copy.condition = "Sunny";
-                copy.conditionDesc = "Extreme heatwave active with temperatures reaching 36°C";
-                copy.highC = 38;
-                copy.lowC = 26;
-                copy.humidity = 40;
-                copy.windKph = 8;
-                copy.windDir = getWindDirectionText(135);
-                copy.windDirVal = 135;
-                copy.uvIndex = 11;
-                copy.airQuality = "Moderate (68 AQI)";
-                copy.airQualityValue = 68;
-                copy.sunrise = "05:01 AM";
-                copy.sunset = "09:12 PM";
-
-                const nowTime = new Date();
-                copy.hourly = copy.hourly.map((h, i) => {
-                    const hDate = new Date(nowTime.getTime() + i * 3600000);
-                    h.time = format12Hour(hDate);
-                    if (i < 4) {
-                        h.condition = "Sunny";
-                        h.tempC = 36 + Math.round(Math.sin(i) * 2);
-                    } else if (i < 8) {
-                        h.condition = "Cloudy";
-                        h.tempC = 33 - (i - 4);
-                    } else {
-                        h.condition = "Night";
-                        h.tempC = 25 - (i - 8) / 2;
-                    }
-                    h.pop = 0;
-                    h.precipitation = 0;
-                    return h;
-                });
-
-                copy.lat = 25.2048;
-                copy.lon = 55.2708;
-                return copy;
-            }
 
             let lat = 51.5074;
             let lon = -0.1278;
@@ -1716,6 +1893,7 @@
                 lon = popularCities[cleanQuery].lon;
                 resolvedName = popularCities[cleanQuery].name;
             } else {
+                let geocodeMatched = false;
                 try {
                     const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1`, {
                         headers: { 'Accept-Language': 'en' },
@@ -1726,111 +1904,36 @@
                         lat = parseFloat(geoData[0].lat);
                         lon = parseFloat(geoData[0].lon);
                         resolvedName = geoData[0].display_name.split(',')[0] + ", " + (geoData[0].display_name.split(',').slice(-1)[0] || "").trim();
+                        geocodeMatched = true;
                     }
                 } catch (e) {
                     console.warn("Fast Geocoding bypassed, falling back to presets");
                 }
+                if (!geocodeMatched) {
+                    // Be honest instead of silently showing the London default.
+                    showNotification("Location Not Found", `Couldn't find "${cityName}". Showing London as a fallback — check the spelling and try again.`, "warning");
+                    resolvedName = "London, UK";
+                }
             }
 
             try {
-                const weatherPromise = fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code,precipitation_probability,precipitation,relative_humidity_2m,wind_speed_10m,uv_index,dew_point_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=auto`, {
-                    signal: getAbortSignal(6000)
-                });
-
-                const aqPromise = fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,pm2_5,pm10,ozone,nitrogen_dioxide,sulfur_dioxide,carbon_monoxide&hourly=us_aqi&timezone=auto`, {
-                    signal: getAbortSignal(6000)
-                })
-                    .then(res => res.json())
-                    .catch(e => {
-                        console.warn("AQI fetch failed", e);
-                        return null;
-                    });
-
-                const [weatherRes, aqData] = await Promise.all([weatherPromise, aqPromise]);
-                const weatherData = await weatherRes.json();
-
-                const currentCondition = mapWMOToCondition(weatherData.current.weather_code);
-
-                const usAqi = aqData && aqData.current ? Math.round(aqData.current.us_aqi) : 32;
-                let aqiDesc = "Good";
-                if (usAqi > 50) aqiDesc = "Moderate";
-                if (usAqi > 100) aqiDesc = "Unhealthy for Sensitive Groups";
-                if (usAqi > 150) aqiDesc = "Unhealthy";
-                if (usAqi > 200) aqiDesc = "Very Unhealthy";
-                if (usAqi > 300) aqiDesc = "Hazardous";
-
-                const formattedData = {
-                    location: resolvedName,
-                    lat: lat,
-                    lon: lon,
-                    tempC: weatherData.current.temperature_2m,
-                    condition: currentCondition,
-                    conditionDesc: `${currentCondition} conditions with humidity at ${weatherData.current.relative_humidity_2m}%`,
-                    highC: weatherData.daily.temperature_2m_max[0],
-                    lowC: weatherData.daily.temperature_2m_min[0],
-                    humidity: weatherData.current.relative_humidity_2m,
-                    windKph: weatherData.current.wind_speed_10m,
-                    windDir: getWindDirectionText(weatherData.current.wind_direction_10m),
-                    windDirVal: weatherData.current.wind_direction_10m,
-                    uvIndex: Math.round(weatherData.daily.uv_index_max[0]),
-                    airQuality: `${aqiDesc} (${usAqi} AQI)`,
-                    airQualityValue: usAqi,
-                    pollutants: aqData && aqData.current ? {
-                        pm2_5: aqData.current.pm2_5,
-                        pm10: aqData.current.pm10,
-                        ozone: aqData.current.ozone,
-                        no2: aqData.current.nitrogen_dioxide,
-                        so2: aqData.current.sulfur_dioxide,
-                        co: aqData.current.carbon_monoxide
-                    } : {
-                        pm2_5: 8.5,
-                        pm10: 12.0,
-                        ozone: 35.0,
-                        no2: 15.0,
-                        so2: 1.2,
-                        co: 250
-                    },
-                    sunrise: format12Hour(weatherData.daily.sunrise[0]),
-                    sunset: format12Hour(weatherData.daily.sunset[0]),
-                    hourly: (() => {
-                        const nowTime = Date.now();
-                        let startIndex = 0;
-                        let minDiff = Infinity;
-                        for (let i = 0; i < weatherData.hourly.time.length; i++) {
-                            const diff = Math.abs(new Date(weatherData.hourly.time[i]).getTime() - nowTime);
-                            if (diff < minDiff) {
-                                minDiff = diff;
-                                startIndex = i;
-                            }
-                        }
-                        return weatherData.hourly.time.slice(startIndex, startIndex + 24).map((time, idx) => ({
-                            time: format12Hour(time),
-                            tempC: weatherData.hourly.temperature_2m[startIndex + idx],
-                            condition: mapWMOToCondition(weatherData.hourly.weather_code[startIndex + idx]),
-                            pop: weatherData.hourly.precipitation_probability[startIndex + idx] || 0,
-                            precipitation: weatherData.hourly.precipitation ? (weatherData.hourly.precipitation[startIndex + idx] || 0) : 0,
-                            humidity: weatherData.hourly.relative_humidity_2m[startIndex + idx] || 0,
-                            windKph: weatherData.hourly.wind_speed_10m[startIndex + idx] || 0,
-                            uv: weatherData.hourly.uv_index[startIndex + idx] || 0,
-                            dewPoint: weatherData.hourly.dew_point_2m[startIndex + idx] || 0
-                        }));
-                    })(),
-                    forecast: weatherData.daily.time.slice(0, 7).map((time, idx) => {
-                        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-                        const dayName = days[new Date(time).getDay()];
-                        return {
-                            day: dayName,
-                            condition: mapWMOToCondition(weatherData.daily.weather_code[idx]),
-                            highC: weatherData.daily.temperature_2m_max[idx],
-                            lowC: weatherData.daily.temperature_2m_min[idx],
-                            pop: weatherData.daily.precipitation_probability_max[idx] || 0
-                        };
-                    })
-                };
-
-                return formattedData;
+                const provider = getActiveWeatherProvider();
+                let weatherPart;
+                try {
+                    weatherPart = await provider.fetch(lat, lon);
+                } catch (provErr) {
+                    if (provider.id !== "open-meteo") {
+                        console.warn(`${provider.label} fetch failed, falling back to Open-Meteo.`, provErr);
+                        showNotification("Weather Data Source", `${provider.label} failed: ${provErr.message}. Falling back to Open-Meteo.`, "warning");
+                        weatherPart = await WEATHER_PROVIDERS["open-meteo"].fetch(lat, lon);
+                    } else {
+                        throw provErr;
+                    }
+                }
+                return { location: resolvedName, lat: lat, lon: lon, ...weatherPart };
             } catch (err) {
                 console.warn("Weather fetch failure, loading local dataset.", err);
+                showNotification("Offline Data", "Couldn't reach the live weather sources. Showing sample data — values may be inaccurate.", "warning");
                 return mockRegionalWeather(cityName);
             }
         }
@@ -3506,7 +3609,7 @@ Format of JSON:
                     const displayVal = Math.min(progressVal, 95);
                     if (progressBar) progressBar.style.width = `${displayVal}%`;
                     if (progressPercent) progressPercent.textContent = `${displayVal}%`;
-                    if (progressStatus) progressStatus.textContent = "Connecting to Google weather database...";
+                    if (progressStatus) progressStatus.textContent = "Connecting to live weather source...";
                 }
             }, 25);
         }
@@ -3773,6 +3876,18 @@ Format of JSON:
             }
         }
 
+        // Show the OpenWeatherMap key input only when that source is selected.
+        function updateOwmKeySectionVisibility() {
+            const sourceSelect = document.getElementById("settings-weather-source");
+            const owmSection = document.getElementById("owm-key-section");
+            if (!sourceSelect || !owmSection) return;
+            if (sourceSelect.value === "openweathermap") {
+                owmSection.classList.remove("hidden");
+            } else {
+                owmSection.classList.add("hidden");
+            }
+        }
+
         function openSettingsModal() {
             const modal = document.getElementById("settings-modal");
             const container = document.getElementById("settings-modal-container");
@@ -3794,6 +3909,21 @@ Format of JSON:
             if (aiToggle) {
                 aiToggle.checked = localStorage.getItem("gemini_ai_enabled") !== "false";
             }
+
+            const sourceSelect = document.getElementById("settings-weather-source");
+            if (sourceSelect) {
+                sourceSelect.value = localStorage.getItem("weather_source") || "open-meteo";
+            }
+            const owmInput = document.getElementById("settings-owm-key");
+            if (owmInput) {
+                owmInput.value = localStorage.getItem("owm_api_key") || "";
+            }
+            const owmStatusEl = document.getElementById("owm-key-status");
+            if (owmStatusEl) {
+                owmStatusEl.classList.add("hidden");
+                owmStatusEl.textContent = "";
+            }
+            updateOwmKeySectionVisibility();
 
             updateSettingsAPIWarning();
 
@@ -4095,6 +4225,72 @@ Format of JSON:
                     } else {
                         const aiSection = document.getElementById("ai-recommendations-section");
                         if (aiSection) aiSection.classList.add("hidden");
+                    }
+                });
+            }
+
+            // --- Weather data source selector wiring ---
+            const weatherSourceSelect = document.getElementById("settings-weather-source");
+            if (weatherSourceSelect) {
+                weatherSourceSelect.addEventListener("change", () => {
+                    localStorage.setItem("weather_source", weatherSourceSelect.value);
+                    updateOwmKeySectionVisibility();
+                    const provider = WEATHER_PROVIDERS[weatherSourceSelect.value];
+                    if (provider) {
+                        showNotification("Weather Data Source", `Now using ${provider.label}.`, "info");
+                    }
+                    // Refresh the current location with the newly selected source.
+                    handleSearch(currentCity);
+                });
+            }
+
+            const toggleOwmKeyVisibilityBtn = document.getElementById("toggle-owm-key-visibility");
+            const owmKeyInput = document.getElementById("settings-owm-key");
+            if (toggleOwmKeyVisibilityBtn && owmKeyInput) {
+                toggleOwmKeyVisibilityBtn.addEventListener("click", () => {
+                    const icon = toggleOwmKeyVisibilityBtn.querySelector("i");
+                    if (owmKeyInput.type === "password") {
+                        owmKeyInput.type = "text";
+                        icon.className = "fa-solid fa-eye-slash text-sm";
+                    } else {
+                        owmKeyInput.type = "password";
+                        icon.className = "fa-solid fa-eye text-sm";
+                    }
+                });
+            }
+
+            const saveOwmKeyBtn = document.getElementById("save-owm-key-btn");
+            if (saveOwmKeyBtn && owmKeyInput) {
+                saveOwmKeyBtn.addEventListener("click", () => {
+                    const val = owmKeyInput.value.trim();
+                    const statusEl = document.getElementById("owm-key-status");
+                    if (!val) {
+                        statusEl.textContent = "Please enter a key.";
+                        statusEl.className = "text-xs font-semibold text-rose-500 pl-1";
+                        statusEl.classList.remove("hidden");
+                        return;
+                    }
+                    localStorage.setItem("owm_api_key", val);
+                    statusEl.textContent = "Key saved!";
+                    statusEl.className = "text-xs font-semibold text-emerald-500 pl-1";
+                    statusEl.classList.remove("hidden");
+                    // If OpenWeatherMap is the active source, refresh now that a key exists.
+                    if ((localStorage.getItem("weather_source") || "open-meteo") === "openweathermap") {
+                        handleSearch(currentCity);
+                    }
+                });
+            }
+
+            const clearOwmKeyBtn = document.getElementById("clear-owm-key-btn");
+            if (clearOwmKeyBtn && owmKeyInput) {
+                clearOwmKeyBtn.addEventListener("click", () => {
+                    localStorage.removeItem("owm_api_key");
+                    owmKeyInput.value = "";
+                    const statusEl = document.getElementById("owm-key-status");
+                    if (statusEl) {
+                        statusEl.textContent = "Key cleared.";
+                        statusEl.className = "text-xs font-semibold text-slate-500 pl-1";
+                        statusEl.classList.remove("hidden");
                     }
                 });
             }
