@@ -332,6 +332,79 @@
                     </label>
                 </div>
 
+                <!-- Notifications Section -->
+                <div
+                    class="p-4 bg-slate-50 dark:bg-zinc-900/50 rounded-3xl border border-transparent dark:border-transparent space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="text-left pr-4">
+                            <h4
+                                class="font-google font-bold text-sm text-slate-800 dark:text-white flex items-center gap-2">
+                                <i class="fa-solid fa-bell text-indigo-500"></i> Push Notifications
+                            </h4>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                                Get alerted even when this tab isn't focused. Requires browser notification
+                                permission.
+                            </p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer select-none flex-shrink-0">
+                            <input type="checkbox" id="settings-notifications-toggle" class="sr-only peer">
+                            <div
+                                class="w-11 h-6 bg-slate-200 dark:bg-zinc-800 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-500/50 peer-checked:bg-indigo-650 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full">
+                            </div>
+                        </label>
+                    </div>
+
+                    <p id="notification-permission-status" class="hidden text-[11px] font-semibold px-3 py-2 rounded-xl">
+                    </p>
+
+                    <div id="notification-sub-options"
+                        class="hidden space-y-3 pt-3 border-t border-slate-200/60 dark:border-zinc-800/60">
+                        <div class="flex items-center justify-between">
+                            <div class="text-left pr-4">
+                                <h5 class="font-google font-semibold text-xs text-slate-700 dark:text-slate-200">
+                                    Extreme Event Alerts</h5>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Notify automatically
+                                    the moment a hazard becomes active nearby.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer select-none flex-shrink-0">
+                                <input type="checkbox" id="settings-notify-hazards-toggle" class="sr-only peer"
+                                    checked>
+                                <div
+                                    class="w-11 h-6 bg-slate-200 dark:bg-zinc-800 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-500/50 peer-checked:bg-indigo-650 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full">
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="text-left pr-4">
+                                <h5 class="font-google font-semibold text-xs text-slate-700 dark:text-slate-200">
+                                    Daily Briefing</h5>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Send a daily forecast
+                                    summary at a set time.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer select-none flex-shrink-0">
+                                <input type="checkbox" id="settings-notify-daily-toggle" class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-slate-200 dark:bg-zinc-800 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-500/50 peer-checked:bg-indigo-650 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full">
+                                </div>
+                            </label>
+                        </div>
+                        <div id="notify-daily-time-row" class="hidden pl-1">
+                            <label for="settings-notify-daily-time"
+                                class="text-[11px] font-semibold text-slate-600 dark:text-slate-400 block mb-1.5">Briefing
+                                time</label>
+                            <input type="time" id="settings-notify-daily-time" value="08:00"
+                                class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-slate-800 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <p class="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed pl-1">
+                            <i class="fa-solid fa-circle-info"></i> Checked while this app is open (including
+                            installed/minimized). On supported Android/Chrome installs, checks may also run
+                            periodically in the background; iOS and some browsers don't support background checks, so
+                            keeping the app open or installed gives the most reliable delivery.
+                        </p>
+                    </div>
+                </div>
+
                 <!-- Instructions Section -->
                 <div
                      class="p-4 bg-indigo-50/40 dark:bg-indigo-950/20 border border-indigo-100/50 dark:border-indigo-900/30 rounded-3xl space-y-2.5">
@@ -998,6 +1071,8 @@
     <!-- Hazard alert engine (heatwave/cold/wind/storm/earthquake) - loaded before the main
          script below since renderWeatherData() calls into these functions. -->
     <script src="hazards.js"></script>
+    <!-- Notifications: permission handling, hazard-triggered alerts, daily briefing. -->
+    <script src="notifications.js"></script>
     <script>
         /*
          * App State & Default Backup Mock Values
@@ -2859,7 +2934,11 @@ Format of JSON:
                 ? evaluateHazardAlerts(data, data.earthquakes || [], data.nwsAlerts || [])
                 : [];
             data.activeAlerts = activeAlerts;
-            if (typeof renderHazardAlerts === "function") renderHazardAlerts(activeAlerts);
+            if (typeof renderHazardAlerts === "function") renderHazardAlerts(activeAlerts, data);
+
+            if (typeof checkAndSendDailyBriefing === "function") {
+                checkAndSendDailyBriefing(data).catch(e => console.warn("Daily briefing check failed:", e));
+            }
         }
 
         /*
@@ -3960,6 +4039,42 @@ Format of JSON:
             }
         }
 
+        function updateNotificationSettingsUI() {
+            const masterToggle = document.getElementById("settings-notifications-toggle");
+            if (!masterToggle) return;
+
+            const hazardsToggle = document.getElementById("settings-notify-hazards-toggle");
+            const dailyToggle = document.getElementById("settings-notify-daily-toggle");
+            const dailyTimeInput = document.getElementById("settings-notify-daily-time");
+            const subOptions = document.getElementById("notification-sub-options");
+            const dailyTimeRow = document.getElementById("notify-daily-time-row");
+            const statusEl = document.getElementById("notification-permission-status");
+
+            const settings = typeof getNotificationSettings === "function" ? getNotificationSettings() : null;
+            const supported = typeof isNotificationSupported === "function" && isNotificationSupported();
+            const permission = supported ? Notification.permission : "unsupported";
+
+            masterToggle.checked = !!(settings && settings.enabled && permission === "granted");
+            if (hazardsToggle) hazardsToggle.checked = settings ? settings.notifyHazards : true;
+            if (dailyToggle) dailyToggle.checked = settings ? settings.notifyDaily : false;
+            if (dailyTimeInput) dailyTimeInput.value = settings ? settings.dailyTime : "08:00";
+
+            if (subOptions) subOptions.classList.toggle("hidden", !masterToggle.checked);
+            if (dailyTimeRow) dailyTimeRow.classList.toggle("hidden", !(dailyToggle && dailyToggle.checked));
+
+            if (statusEl) {
+                if (!supported) {
+                    statusEl.textContent = "Notifications aren't supported in this browser.";
+                    statusEl.className = "block text-[11px] font-semibold px-3 py-2 rounded-xl bg-slate-100 dark:bg-zinc-900 text-slate-500 dark:text-slate-400";
+                } else if (permission === "denied") {
+                    statusEl.textContent = "Notifications are blocked for this site. Enable them in your browser's site settings to turn this on.";
+                    statusEl.className = "block text-[11px] font-semibold px-3 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400";
+                } else {
+                    statusEl.className = "hidden";
+                }
+            }
+        }
+
         function openSettingsModal() {
             const modal = document.getElementById("settings-modal");
             const container = document.getElementById("settings-modal-container");
@@ -3998,6 +4113,7 @@ Format of JSON:
             updateOwmKeySectionVisibility();
 
             updateSettingsAPIWarning();
+            updateNotificationSettingsUI();
 
             modal.classList.remove("hidden");
             setTimeout(() => {
@@ -4281,6 +4397,49 @@ Format of JSON:
                         const aiSection = document.getElementById("ai-recommendations-section");
                         if (aiSection) aiSection.classList.add("hidden");
                     }
+                });
+            }
+
+            // --- Notification settings wiring ---
+            const settingsNotificationsToggle = document.getElementById("settings-notifications-toggle");
+            if (settingsNotificationsToggle) {
+                settingsNotificationsToggle.addEventListener("change", async () => {
+                    if (settingsNotificationsToggle.checked) {
+                        const granted = typeof enableNotifications === "function" ? await enableNotifications() : false;
+                        if (!granted) {
+                            showNotification("Notifications Blocked", "Permission was denied or dismissed. Allow notifications for this site in your browser settings to turn this on.", "warning");
+                        } else if (weatherCache) {
+                            syncNotificationStateToSW(weatherCache);
+                        }
+                    } else if (typeof disableNotifications === "function") {
+                        disableNotifications();
+                    }
+                    updateNotificationSettingsUI();
+                });
+            }
+
+            const settingsNotifyHazardsToggle = document.getElementById("settings-notify-hazards-toggle");
+            if (settingsNotifyHazardsToggle) {
+                settingsNotifyHazardsToggle.addEventListener("change", () => {
+                    localStorage.setItem("notify_hazards_enabled", settingsNotifyHazardsToggle.checked ? "true" : "false");
+                });
+            }
+
+            const settingsNotifyDailyToggle = document.getElementById("settings-notify-daily-toggle");
+            if (settingsNotifyDailyToggle) {
+                settingsNotifyDailyToggle.addEventListener("change", () => {
+                    localStorage.setItem("notify_daily_enabled", settingsNotifyDailyToggle.checked ? "true" : "false");
+                    const dailyTimeRow = document.getElementById("notify-daily-time-row");
+                    if (dailyTimeRow) dailyTimeRow.classList.toggle("hidden", !settingsNotifyDailyToggle.checked);
+                });
+            }
+
+            const settingsNotifyDailyTime = document.getElementById("settings-notify-daily-time");
+            if (settingsNotifyDailyTime) {
+                settingsNotifyDailyTime.addEventListener("change", () => {
+                    localStorage.setItem("notify_daily_time", settingsNotifyDailyTime.value || "08:00");
+                    // Let a briefing fire again today if the user just moved the time.
+                    localStorage.removeItem("notify_daily_last_date");
                 });
             }
 
