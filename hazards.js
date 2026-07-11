@@ -265,11 +265,17 @@ function buildHazardBannerHTML(alert) {
 /**
  * Renders the active alert list into #hazard-alerts-container, diffing
  * against what's already there so unrelated banners (and their audio state)
- * aren't torn down and rebuilt on every re-render.
+ * aren't torn down and rebuilt on every re-render. `data` (the weather
+ * snapshot the alerts were evaluated from) is optional and only used to
+ * forward newly-active alerts to the notification system.
  */
-function renderHazardAlerts(alerts) {
+function renderHazardAlerts(alerts, data) {
     const container = document.getElementById("hazard-alerts-container");
     if (!container) return;
+
+    if (typeof checkAndNotifyHazards === "function") {
+        checkAndNotifyHazards(alerts, data).catch(e => console.warn("Hazard notification check failed:", e));
+    }
 
     const nextTypes = new Set(alerts.map(a => a.type));
 
@@ -337,22 +343,27 @@ function updateHazardMuteButtons() {
 }
 
 // Event delegation for mute buttons: banners are created/destroyed dynamically,
-// so a single listener on the container handles all of them.
-document.addEventListener("DOMContentLoaded", () => {
-    const container = document.getElementById("hazard-alerts-container");
-    if (!container) return;
-    container.addEventListener("click", (e) => {
-        const btn = e.target.closest("[data-mute-btn]");
-        if (!btn) return;
-        if (typeof isMuted === "undefined") return;
-        isMuted = !isMuted;
-        if (typeof stormAudio !== "undefined" && stormAudio) {
-            if (isMuted) {
-                stormAudio.pause();
-            } else {
-                stormAudio.play().catch(e2 => console.warn("Failed to play siren:", e2));
+// so a single listener on the container handles all of them. Guarded because
+// this file is also imported into the service worker (sw.js, via
+// importScripts) to reuse evaluateHazardAlerts()/fetchNearbyEarthquakes()/
+// fetchNWSAlerts() for background checks - `document` doesn't exist there.
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", () => {
+        const container = document.getElementById("hazard-alerts-container");
+        if (!container) return;
+        container.addEventListener("click", (e) => {
+            const btn = e.target.closest("[data-mute-btn]");
+            if (!btn) return;
+            if (typeof isMuted === "undefined") return;
+            isMuted = !isMuted;
+            if (typeof stormAudio !== "undefined" && stormAudio) {
+                if (isMuted) {
+                    stormAudio.pause();
+                } else {
+                    stormAudio.play().catch(e2 => console.warn("Failed to play siren:", e2));
+                }
             }
-        }
-        updateHazardMuteButtons();
+            updateHazardMuteButtons();
+        });
     });
-});
+}
