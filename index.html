@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unofficial Google Weather - Material You Experience</title>
     <link rel="icon" type="image/png" href="images/cloud.png">
+    <!-- PWA: installable app support -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="images/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GWeather">
     <!-- Google Fonts for authentic Material Design typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,11 +45,21 @@
                         'snow': 'snow 3s linear infinite',
                         'wind': 'wind 2.5s ease-in-out infinite',
                         'shimmer': 'shimmer 1.5s infinite linear',
+                        'cloud-drift': 'cloudDrift 8s ease-in-out infinite',
+                        'edge-pulse': 'edgePulse 2.2s ease-in-out infinite',
                     },
                     keyframes: {
                         float: {
                             '0%, 100%': { transform: 'translateY(0px)' },
                             '50%': { transform: 'translateY(-10px)' },
+                        },
+                        cloudDrift: {
+                            '0%, 100%': { transform: 'translateX(-6px)' },
+                            '50%': { transform: 'translateX(6px)' },
+                        },
+                        edgePulse: {
+                            '0%, 100%': { opacity: 0.15 },
+                            '50%': { opacity: 0.4 },
                         },
                         pulseGlow: {
                             '0%, 100%': { opacity: 1, filter: 'drop-shadow(0 0 15px rgba(251, 191, 36, 0.6))' },
@@ -101,6 +118,10 @@
 
     <!-- Ambient Particle Overlay for Atmospheric Effects -->
     <div id="ambient-particles" class="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-40"></div>
+
+    <!-- Screen-edge glow shown only while a critical hazard (severe storm/earthquake) is active -->
+    <div id="hazard-edge-glow"
+        class="hidden fixed inset-0 pointer-events-none z-40 ring-[10px] ring-inset ring-red-500/50 animate-edge-pulse"></div>
 
     <!-- Main Dynamic Background Gradients (will update smoothly based on weather condition) -->
     <div id="dynamic-bg"
@@ -402,6 +423,12 @@
                              class="px-3.5 py-1.5 rounded-full font-google text-xs font-semibold text-slate-600 dark:text-slate-400 transition-all hover:bg-slate-100 dark:hover:bg-zinc-900/80">°F</button>
                      </div>
 
+                     <!-- Install App (PWA) -->
+                     <button id="install-app-btn" type="button" title="Install App"
+                         class="hidden p-3 bg-white/70 dark:bg-zinc-950/70 hover:bg-slate-100 dark:hover:bg-zinc-900/80 rounded-full border border-slate-300/60 dark:border-zinc-800/60 backdrop-blur-md shadow-sm transition-all hover:scale-105 active:scale-95 text-slate-600 dark:text-indigo-400">
+                         <i class="fa-solid fa-download text-lg"></i>
+                     </button>
+
                      <!-- Theme Toggle -->
                      <button id="dark-mode-toggle"
                          class="p-3 bg-white/70 dark:bg-zinc-950/70 hover:bg-slate-100 dark:hover:bg-zinc-900/80 rounded-full border border-slate-300/60 dark:border-zinc-800/60 backdrop-blur-md shadow-sm transition-all hover:scale-105 active:scale-95 text-slate-600 dark:text-yellow-400">
@@ -436,53 +463,8 @@
             </button>
         </div>
 
-        <!-- Severe Weather Alert Banner (Threat to Life) -->
-         <div id="storm-warning-banner"
-             class="hidden mb-6 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 dark:from-red-950 dark:via-rose-950 dark:to-red-900 border border-red-500/30 text-white rounded-5xl p-5 shadow-2xl relative overflow-hidden animate-pulse-glow">
-            <div class="absolute -top-12 -left-12 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex items-start gap-4">
-                    <div
-                        class="p-3 bg-white/20 rounded-2xl animate-bounce flex items-center justify-center flex-shrink-0">
-                        <i class="fa-solid fa-triangle-exclamation text-2xl text-yellow-300"></i>
-                    </div>
-                    <div class="text-left">
-                        <h3
-                            class="font-google font-extrabold text-base sm:text-lg tracking-tight text-white flex items-center gap-2">
-                            CRITICAL SEVERE WEATHER WARNING
-                        </h3>
-                        <p id="storm-warning-location" class="text-xs font-semibold text-red-100 mt-0.5"></p>
-                        <p id="storm-warning-desc" class="text-xs text-red-50 mt-2 leading-relaxed font-medium">
-                            A massive storm with hazardous conditions is active in this area. Take immediate safety
-                            precautions.
-                        </p>
-                        <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-red-100">
-                            <span class="flex items-center gap-1.5"><i
-                                    class="fa-solid fa-circle-check text-[9px] text-yellow-300"></i> Seek sturdy indoor
-                                shelter immediately</span>
-                            <span class="flex items-center gap-1.5"><i
-                                    class="fa-solid fa-circle-check text-[9px] text-yellow-300"></i> Avoid travel and
-                                stay away from windows</span>
-                            <span class="flex items-center gap-1.5"><i
-                                    class="fa-solid fa-phone text-[9px] text-yellow-300"></i> Emergency Services: Call
-                                911 / 999 / 112 / 119</span>
-                            <span class="flex items-center gap-1.5"><i
-                                    class="fa-solid fa-circle-check text-[9px] text-yellow-300"></i> Local alerts active
-                                (Siren playing)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Controls: Mute Siren -->
-                <div class="flex items-center gap-2.5 flex-shrink-0 w-full md:w-auto justify-end">
-                    <button id="btn-mute-siren"
-                        class="px-4 py-2.5 rounded-full bg-white text-red-700 hover:bg-red-50 font-google text-xs font-bold shadow-md transition-all flex items-center gap-2 active:scale-95">
-                        <i id="mute-icon" class="fa-solid fa-volume-high text-xs"></i>
-                        <span id="mute-text">Mute Siren</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+        <!-- Dynamic Hazard Alert Banners (Threat to Life) -->
+        <div id="hazard-alerts-container" class="space-y-3 mb-6"></div>
 
         <!-- Fast Core Loader Overlay -->
         <div id="loader-overlay"
@@ -601,6 +583,11 @@
                             <span id="last-updated"
                                 class="text-[10px] text-slate-400 dark:text-slate-500/80 font-medium mt-1 block">Last
                                 updated: --:--</span>
+                            <span id="stale-data-pill"
+                                class="hidden mt-1 items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded-full w-fit">
+                                <i class="fa-solid fa-clock-rotate-left text-[9px]"></i>
+                                <span id="stale-data-text"></span>
+                            </span>
                         </div>
                     </div>
 
@@ -739,7 +726,7 @@
 
                     <!-- Windy Radar Embed -->
                     <div
-                        class="relative w-full h-[320px] rounded-3xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200/50 dark:border-zinc-800/80">
+                        class="relative w-full h-[220px] sm:h-[280px] lg:h-[320px] rounded-3xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200/50 dark:border-zinc-800/80">
                         <iframe id="weather-map-iframe" class="w-full h-full border-0 rounded-3xl" src=""
                             allowfullscreen>
                         </iframe>
@@ -788,13 +775,13 @@
 
                             <!-- Graph Bars Container (overlayed on grid lines) -->
                             <div id="rain-bars-container"
-                                class="absolute left-[64px] right-0 top-0.5 bottom-1 flex justify-around items-end h-[60px] z-10">
+                                class="absolute left-[48px] sm:left-[64px] right-0 top-0.5 bottom-1 flex justify-around items-end h-[60px] z-10">
                                 <!-- Bars will be dynamically inserted here -->
                             </div>
 
                             <!-- X-Axis Labels Container -->
                             <div id="rain-times-container"
-                                class="flex justify-around ml-[64px] mt-2.5 text-[9px] font-bold text-slate-400 dark:text-slate-500">
+                                class="flex justify-around ml-[48px] sm:ml-[64px] mt-2.5 text-[9px] font-bold text-slate-400 dark:text-slate-500">
                                 <!-- Time labels will be dynamically inserted here -->
                             </div>
                         </div>
@@ -839,13 +826,13 @@
 
                             <!-- Graph Bars Container (overlayed on grid lines) -->
                             <div id="heat-bars-container"
-                                class="absolute left-[64px] right-0 top-0.5 bottom-1 h-[60px] z-10">
+                                class="absolute left-[48px] sm:left-[64px] right-0 top-0.5 bottom-1 h-[60px] z-10">
                                 <!-- Line chart and points will be dynamically inserted here -->
                             </div>
 
                             <!-- X-Axis Labels Container -->
                             <div id="heat-times-container"
-                                class="flex justify-around ml-[64px] mt-2.5 text-[9px] font-bold text-slate-400 dark:text-slate-500">
+                                class="flex justify-around ml-[48px] sm:ml-[64px] mt-2.5 text-[9px] font-bold text-slate-400 dark:text-slate-500">
                                 <!-- Time labels will be dynamically inserted here -->
                             </div>
                         </div>
@@ -1008,6 +995,9 @@
 
     </div>
 
+    <!-- Hazard alert engine (heatwave/cold/wind/storm/earthquake) - loaded before the main
+         script below since renderWeatherData() calls into these functions. -->
+    <script src="hazards.js"></script>
     <script>
         /*
          * App State & Default Backup Mock Values
@@ -1019,6 +1009,9 @@
         let isMuted = false;
         let stormAudio = null;
         let localCityCoords = null;
+        let lastFetchTimestamp = 0;
+        let autoRefreshInterval = null;
+        let autoRefreshTickCount = 0;
 
         function getAbortSignal(ms) {
             if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
@@ -1482,6 +1475,9 @@
             } else if (type === "mist" || type === "storm") {
                 pCount = 10;
                 pClass = "bg-slate-300 dark:bg-slate-700 w-16 h-16 rounded-full blur-xl opacity-25 animate-float";
+            } else if (type === "sun") {
+                pCount = 8;
+                pClass = "bg-amber-200 dark:bg-amber-400 w-1 h-1 rounded-full opacity-40 animate-float";
             } else {
                 return;
             }
@@ -1507,6 +1503,7 @@
             if (normalized.includes("sun") || normalized.includes("clear")) {
                 return `
                 <svg class="${cssClass}" viewBox="-10 -10 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="28" fill="#FBBF24" opacity="0.12" class="animate-pulse-glow" />
                     <circle cx="50" cy="50" r="24" fill="#FBBF24" opacity="0.15" class="animate-pulse" />
                     <circle cx="50" cy="50" r="18" fill="#FBBF24" />
                     <g stroke="#FBBF24" stroke-width="3.5" stroke-linecap="round">
@@ -1577,8 +1574,8 @@
                                 repeatCount="indefinite" />
                         </g>
                     </g>
-                    <path d="M22 62 Q22 51 33 51 Q36 41 46 41 Q58 41 62 51 Q74 51 74 62 Q74 72 64 72 L32 72 Q22 72 22 62 Z" fill="#94A3B8" />
-                    <path d="M32 68 Q32 57 43 57 Q46 47 56 47 Q68 47 72 57 Q84 57 84 68 Q84 78 74 78 L42 78 Q32 78 32 68 Z" fill="#E2E8F0" />
+                    <path d="M22 62 Q22 51 33 51 Q36 41 46 41 Q58 41 62 51 Q74 51 74 62 Q74 72 64 72 L32 72 Q22 72 22 62 Z" fill="#94A3B8" class="animate-cloud-drift" />
+                    <path d="M32 68 Q32 57 43 57 Q46 47 56 47 Q68 47 72 57 Q84 57 84 68 Q84 78 74 78 L42 78 Q32 78 32 68 Z" fill="#E2E8F0" class="animate-cloud-drift" style="animation-delay: 1.5s" />
                 </svg>`;
             } else if (normalized.includes("snow") || normalized.includes("ice") || normalized.includes("hail") || normalized.includes("freeze")) {
                 return `
@@ -1669,7 +1666,7 @@
 
         // --- Provider: Open-Meteo (free, no key) -------------------
         async function fetchOpenMeteoWeather(lat, lon) {
-            const weatherPromise = fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,weather_code,precipitation_probability,precipitation,relative_humidity_2m,wind_speed_10m,uv_index,dew_point_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=auto`, {
+            const weatherPromise = fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,apparent_temperature,wind_gusts_10m&hourly=temperature_2m,weather_code,precipitation_probability,precipitation,relative_humidity_2m,wind_speed_10m,uv_index,dew_point_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max,apparent_temperature_max,apparent_temperature_min,wind_gusts_10m_max&timezone=auto`, {
                 signal: getAbortSignal(6000)
             });
 
@@ -1695,12 +1692,14 @@
 
             return {
                 tempC: weatherData.current.temperature_2m,
+                apparentTempC: weatherData.current.apparent_temperature,
                 condition: currentCondition,
                 conditionDesc: `${currentCondition} conditions with humidity at ${weatherData.current.relative_humidity_2m}%`,
                 highC: weatherData.daily.temperature_2m_max[0],
                 lowC: weatherData.daily.temperature_2m_min[0],
                 humidity: weatherData.current.relative_humidity_2m,
                 windKph: weatherData.current.wind_speed_10m,
+                windGustsKph: weatherData.current.wind_gusts_10m,
                 windDir: getWindDirectionText(weatherData.current.wind_direction_10m),
                 windDirVal: weatherData.current.wind_direction_10m,
                 uvIndex: Math.round(weatherData.daily.uv_index_max[0]),
@@ -1806,12 +1805,14 @@
 
             return {
                 tempC: cur.temp,
+                apparentTempC: cur.feels_like,
                 condition: curCondition,
                 conditionDesc: `${curCondition} conditions with humidity at ${cur.humidity}%`,
                 highC: today.temp.max,
                 lowC: today.temp.min,
                 humidity: cur.humidity,
                 windKph: (cur.wind_speed || 0) * 3.6, // m/s -> km/h
+                windGustsKph: cur.wind_gust != null ? cur.wind_gust * 3.6 : undefined,
                 windDir: getWindDirectionText(cur.wind_deg || 0),
                 windDirVal: cur.wind_deg || 0,
                 uvIndex: Math.round(cur.uvi || 0),
@@ -1860,6 +1861,38 @@
                 }
             }
             return provider;
+        }
+
+        // --- Resilient last-known-good weather cache -----------------
+        // Lets a transient API outage fall back to recent real data
+        // (marked stale) instead of jumping straight to mock data.
+        const WEATHER_CACHE_KEY = "weather_cache_v1";
+        const WEATHER_CACHE_MAX_AGE_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+        function cacheWeatherResult(lat, lon, data) {
+            try {
+                const coordsKey = `${lat.toFixed(2)},${lon.toFixed(2)}`;
+                localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({
+                    coordsKey, data, timestamp: Date.now(), location: data.location
+                }));
+            } catch (e) {
+                console.warn("Failed to write weather cache", e);
+            }
+        }
+
+        function getCachedWeatherResult(lat, lon) {
+            try {
+                const raw = localStorage.getItem(WEATHER_CACHE_KEY);
+                if (!raw) return null;
+                const entry = JSON.parse(raw);
+                const coordsKey = `${lat.toFixed(2)},${lon.toFixed(2)}`;
+                if (entry.coordsKey !== coordsKey) return null;
+                if (Date.now() - entry.timestamp > WEATHER_CACHE_MAX_AGE_MS) return null;
+                return entry;
+            } catch (e) {
+                console.warn("Failed to read weather cache", e);
+                return null;
+            }
         }
 
         async function fetchInstantWeather(cityName) {
@@ -1918,21 +1951,41 @@
 
             try {
                 const provider = getActiveWeatherProvider();
-                let weatherPart;
-                try {
-                    weatherPart = await provider.fetch(lat, lon);
-                } catch (provErr) {
-                    if (provider.id !== "open-meteo") {
-                        console.warn(`${provider.label} fetch failed, falling back to Open-Meteo.`, provErr);
-                        showNotification("Weather Data Source", `${provider.label} failed: ${provErr.message}. Falling back to Open-Meteo.`, "warning");
-                        weatherPart = await WEATHER_PROVIDERS["open-meteo"].fetch(lat, lon);
-                    } else {
+
+                const fetchWeatherPart = async () => {
+                    try {
+                        return await provider.fetch(lat, lon);
+                    } catch (provErr) {
+                        if (provider.id !== "open-meteo") {
+                            console.warn(`${provider.label} fetch failed, falling back to Open-Meteo.`, provErr);
+                            showNotification("Weather Data Source", `${provider.label} failed: ${provErr.message}. Falling back to Open-Meteo.`, "warning");
+                            return await WEATHER_PROVIDERS["open-meteo"].fetch(lat, lon);
+                        }
                         throw provErr;
                     }
-                }
-                return { location: resolvedName, lat: lat, lon: lon, ...weatherPart };
+                };
+
+                // Weather is the critical path; earthquake/NWS hazard lookups run in
+                // parallel and are fully error-isolated (fetchNearbyEarthquakes/
+                // fetchNWSAlerts already catch internally and resolve to []), so a
+                // dead USGS/NWS endpoint can never delay or break weather rendering.
+                const [weatherPart, earthquakes, nwsAlerts] = await Promise.all([
+                    fetchWeatherPart(),
+                    typeof fetchNearbyEarthquakes === "function" ? fetchNearbyEarthquakes(lat, lon) : Promise.resolve([]),
+                    typeof fetchNWSAlerts === "function" ? fetchNWSAlerts(lat, lon) : Promise.resolve([])
+                ]);
+
+                const result = { location: resolvedName, lat: lat, lon: lon, ...weatherPart, earthquakes, nwsAlerts };
+                cacheWeatherResult(lat, lon, result);
+                return result;
             } catch (err) {
-                console.warn("Weather fetch failure, loading local dataset.", err);
+                console.warn("Weather fetch failure, checking cache before falling back.", err);
+                const cached = getCachedWeatherResult(lat, lon);
+                if (cached) {
+                    const cachedTime = new Date(cached.timestamp).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                    showNotification("Showing Cached Data", `Couldn't reach live weather sources. Showing your last known conditions from ${cachedTime}.`, "warning");
+                    return { ...cached.data, stale: true, staleSince: cached.timestamp };
+                }
                 showNotification("Offline Data", "Couldn't reach the live weather sources. Showing sample data — values may be inaccurate.", "warning");
                 return mockRegionalWeather(cityName);
             }
@@ -2066,7 +2119,9 @@ Format of JSON:
             const aiContentArea = document.getElementById("ai-content-area");
             const aiGradientBar = document.getElementById("ai-gradient-bar");
 
-            const isStormAlert = instantData.condition === "Stormy" || (instantData.windKph * 0.621371) > 47; // wind speed > 47 mph (75 kph)
+            // Reuse the hazard alerts already computed by renderWeatherData() above
+            // instead of recomputing the threshold logic here.
+            const isStormAlert = (instantData.activeAlerts || []).some(a => a.type === "severe_storm" || a.type === "extreme_wind");
 
             if (!isAIEnabled && !isStormAlert) {
                 if (aiSection) aiSection.classList.add("hidden");
@@ -2613,10 +2668,33 @@ Format of JSON:
             heatCard.classList.remove("hidden");
         }
 
+        // Smoothly counts an element's numeric text content up/down to a new
+        // value (no library - a small requestAnimationFrame easing loop).
+        function animateNumberTo(el, newValue, duration = 600) {
+            if (!el) return;
+            const startValue = parseInt(el.textContent, 10);
+            if (isNaN(startValue) || startValue === newValue) {
+                el.textContent = newValue;
+                return;
+            }
+            const startTime = performance.now();
+            function step(now) {
+                const progress = Math.min((now - startTime) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.round(startValue + (newValue - startValue) * eased);
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    el.textContent = newValue;
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
         /*
          * UI Renderer & Layout Binder
          */
-        function renderWeatherData(data) {
+        function renderWeatherData(data, options = {}) {
             weatherCache = data;
             updateRainForecastCard(data);
             updateHeatForecastCard(data);
@@ -2655,8 +2733,30 @@ Format of JSON:
                     hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true
                 })}`;
             }
+            lastFetchTimestamp = Date.now();
 
-            if (tempEl) tempEl.textContent = formatTemp(data.tempC);
+            const stalePill = document.getElementById("stale-data-pill");
+            const staleText = document.getElementById("stale-data-text");
+            if (stalePill) {
+                if (data.stale && data.staleSince) {
+                    const staleTime = new Date(data.staleSince).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                    if (staleText) staleText.textContent = `Showing cached data from ${staleTime} — live source unreachable`;
+                    stalePill.classList.remove("hidden");
+                    stalePill.classList.add("flex");
+                } else {
+                    stalePill.classList.add("hidden");
+                    stalePill.classList.remove("flex");
+                }
+            }
+
+            if (tempEl) {
+                const newTempValue = parseInt(formatTemp(data.tempC), 10);
+                if (options.skipAnimation) {
+                    tempEl.textContent = newTempValue;
+                } else {
+                    animateNumberTo(tempEl, newTempValue);
+                }
+            }
             if (unitEl) unitEl.textContent = isCelsius ? "°C" : "°F";
             if (condEl) condEl.textContent = data.condition;
 
@@ -2752,42 +2852,14 @@ Format of JSON:
             // Update Radar Map coordinates
             updateWeatherMap(data.lat || 51.5074, data.lon || -0.1278);
 
-            // Severe Storm Warning Banner and Siren controls
-            const isStormAlert = data.condition === "Stormy" || (data.windKph * 0.621371) > 47;
-            const warningBanner = document.getElementById("storm-warning-banner");
-            const warningLocation = document.getElementById("storm-warning-location");
-            const warningDesc = document.getElementById("storm-warning-desc");
-            const muteIcon = document.getElementById("mute-icon");
-            const muteText = document.getElementById("mute-text");
-
-            if (isStormAlert) {
-                if (warningBanner) {
-                    warningBanner.classList.remove("hidden");
-                    if (warningLocation) warningLocation.textContent = `Severe storm conditions active at ${data.location}`;
-                    if (warningDesc) warningDesc.textContent = `${data.conditionDesc || 'A massive storm with hazardous winds is active.'} Extremely dangerous storm conditions pose a severe threat to life. Seek indoor shelter immediately.`;
-                }
-
-                // Initialize and trigger looped siren play
-                initStormAudio();
-                if (stormAudio) {
-                    if (isMuted) {
-                        stormAudio.pause();
-                        if (muteIcon) muteIcon.className = "fa-solid fa-volume-xmark text-xs";
-                        if (muteText) muteText.textContent = "Unmute Siren";
-                    } else {
-                        stormAudio.play().catch(e => {
-                            console.warn("Audio autoplay blocked, waiting for user click/interaction to play.", e);
-                        });
-                        if (muteIcon) muteIcon.className = "fa-solid fa-volume-high text-xs";
-                        if (muteText) muteText.textContent = "Mute Siren";
-                    }
-                }
-            } else {
-                if (warningBanner) warningBanner.classList.add("hidden");
-                if (stormAudio) {
-                    stormAudio.pause();
-                }
-            }
+            // Dynamic hazard alerts: heatwave, extreme cold, extreme wind,
+            // severe storm, and nearby earthquakes - all evaluated strictly
+            // against this location's data (see hazards.js).
+            const activeAlerts = typeof evaluateHazardAlerts === "function"
+                ? evaluateHazardAlerts(data, data.earthquakes || [], data.nwsAlerts || [])
+                : [];
+            data.activeAlerts = activeAlerts;
+            if (typeof renderHazardAlerts === "function") renderHazardAlerts(activeAlerts);
         }
 
         /*
@@ -3732,7 +3804,7 @@ Format of JSON:
             isCelsius = true;
             document.getElementById("btn-unit-c").className = "px-3.5 py-1.5 rounded-full font-google text-xs font-semibold bg-indigo-600 text-white shadow-sm transition-all";
             document.getElementById("btn-unit-f").className = "px-3.5 py-1.5 rounded-full font-google text-xs font-semibold text-slate-600 dark:text-slate-400 transition-all hover:bg-slate-100 dark:hover:bg-zinc-900/80";
-            if (weatherCache) renderWeatherData(weatherCache);
+            if (weatherCache) renderWeatherData(weatherCache, { skipAnimation: true });
             updateWatchlistWeather();
             const modal = document.getElementById("detail-modal");
             if (modal && !modal.classList.contains("hidden")) {
@@ -3746,7 +3818,7 @@ Format of JSON:
             isCelsius = false;
             document.getElementById("btn-unit-f").className = "px-3.5 py-1.5 rounded-full font-google text-xs font-semibold bg-indigo-600 text-white shadow-sm transition-all";
             document.getElementById("btn-unit-c").className = "px-3.5 py-1.5 rounded-full font-google text-xs font-semibold text-slate-600 dark:text-slate-400 transition-all hover:bg-slate-100 dark:hover:bg-zinc-900/80";
-            if (weatherCache) renderWeatherData(weatherCache);
+            if (weatherCache) renderWeatherData(weatherCache, { skipAnimation: true });
             updateWatchlistWeather();
             const modal = document.getElementById("detail-modal");
             if (modal && !modal.classList.contains("hidden")) {
@@ -3758,7 +3830,7 @@ Format of JSON:
         document.getElementById("dark-mode-toggle").addEventListener("click", () => {
             document.documentElement.classList.toggle("dark");
             localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
-            if (weatherCache) renderWeatherData(weatherCache);
+            if (weatherCache) renderWeatherData(weatherCache, { skipAnimation: true });
         });
 
         document.getElementById("close-notification-btn").addEventListener("click", () => {
@@ -4043,31 +4115,14 @@ Format of JSON:
 
             renderWeatherData(defaultMockData);
 
-            // Bind Mute Siren button click listener
-            const muteBtn = document.getElementById("btn-mute-siren");
-            if (muteBtn) {
-                muteBtn.addEventListener("click", () => {
-                    isMuted = !isMuted;
-                    const muteIcon = document.getElementById("mute-icon");
-                    const muteText = document.getElementById("mute-text");
-
-                    if (stormAudio) {
-                        if (isMuted) {
-                            stormAudio.pause();
-                            if (muteIcon) muteIcon.className = "fa-solid fa-volume-xmark text-xs";
-                            if (muteText) muteText.textContent = "Unmute Siren";
-                        } else {
-                            stormAudio.play().catch(e => console.warn("Failed to play siren:", e));
-                            if (muteIcon) muteIcon.className = "fa-solid fa-volume-high text-xs";
-                            if (muteText) muteText.textContent = "Mute Siren";
-                        }
-                    }
-                });
-            }
+            // Mute Siren button clicks are handled via event delegation in
+            // hazards.js (banners are created/destroyed dynamically, so there's
+            // no static #btn-mute-siren element to bind to at load time).
 
             // Global interaction fallback to start audio if blocked by autoplay policy
             const startAudioOnInteraction = () => {
-                if (stormAudio && !isMuted && stormAudio.paused && document.getElementById("storm-warning-banner") && !document.getElementById("storm-warning-banner").classList.contains("hidden")) {
+                const hazardContainer = document.getElementById("hazard-alerts-container");
+                if (stormAudio && !isMuted && stormAudio.paused && hazardContainer && hazardContainer.children.length > 0) {
                     stormAudio.play().catch(e => console.warn("Autoplay block still active:", e));
                 }
             };
@@ -4382,6 +4437,38 @@ Format of JSON:
             updateBodyScroll();
 
             updateSettingsAPIWarning();
+
+            // --- Freshness: periodic refresh, tab-focus refetch, reconnect refetch ---
+            // 10-minute auto-refresh keeps conditions (and hazard alerts) current
+            // without hammering the free-tier weather/geocoding APIs.
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => {
+                autoRefreshTickCount++;
+                const consent = localStorage.getItem("location_consent");
+                // Every 3rd tick (~30 min) re-check geolocation to catch real movement,
+                // rather than watchPosition, which would keep the GPS radio on continuously.
+                if (consent === "granted" && autoRefreshTickCount % 3 === 0) {
+                    triggerGeoLocation();
+                } else if (localCityCoords) {
+                    handleSearch(localCityCoords);
+                }
+            }, 600000);
+
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === "visible" && localCityCoords) {
+                    const staleMs = Date.now() - (lastFetchTimestamp || 0);
+                    if (staleMs > 120000) {
+                        handleSearch(localCityCoords);
+                    }
+                }
+            });
+
+            window.addEventListener("online", () => {
+                if (localCityCoords) {
+                    showNotification("Back Online", "Reconnected — refreshing weather data.", "info");
+                    handleSearch(localCityCoords);
+                }
+            });
         }
     </script>
 
@@ -4523,6 +4610,8 @@ Format of JSON:
             </div>
         </div>
     </div>
+
+    <script src="pwa.js" defer></script>
 </body>
 
 </html>

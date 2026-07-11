@@ -162,3 +162,30 @@ body,
         filter: blur(0);
     }
 }
+
+@keyframes fadeOutUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-16px);
+        filter: blur(4px);
+    }
+}
+
+/* Utility classes wiring the entrance/exit keyframes above into real,
+   applyable classes (used by dynamic hazard banners and other transient UI). */
+.anim-fade-in-up {
+    animation: fadeInUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.anim-fade-in-down {
+    animation: fadeInDown 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.anim-fade-out-up {
+    animation: fadeOutUp 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
